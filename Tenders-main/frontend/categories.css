@@ -1,0 +1,42 @@
+body {
+    background-color: #f8f9fa;
+}
+.category-container h2 {
+    margin-top: 50px; /* מרווח של 80px מלמעלה */
+}
+.category-container {
+    max-width: 800px;
+    margin: auto;
+    text-align: center;
+    padding: 20px;
+}
+.category-box {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    background: white;
+    transition: 0.3s;
+    cursor: pointer;
+}
+.category-box:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.category-box img {
+    max-width: 80px;
+    margin-bottom: 10px;
+}
+.navbar .container {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center;
+}
+
+/* מוודא שהאייקונים דחופים שמאלה */
+.navbar .ms-auto {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    display: flex;
+}
+.navbar .navbar-brand img {
+    margin-left: auto !important; /* דוחף את הלוגו שמאלה */
+}

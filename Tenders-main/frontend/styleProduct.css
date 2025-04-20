@@ -1,0 +1,111 @@
+.mt-4 {
+  margin-top: 60px !important;
+}
+
+.my-button2:hover {
+  background-color: #c7d6c2;
+
+}
+
+.my-button2 {
+  font-size: 1.2rem;
+  padding: 8px 15px;
+  background-color: #aaaaaa;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 50%; /* הכפתור יהיה חצי מרוחב ה-div */
+  display: block;
+  margin: 10px auto 0 auto; /* ממורכז ומורחק למטה */
+}
+
+
+@media (max-width: 576px) {
+  #productCard {
+    max-width: 15rem;
+
+
+  }
+}
+
+@media (max-width: 576px) {
+  .card {
+    margin-top: 4px !important;
+  }
+}
+
+.card-body {
+  margin-top: 10px !important;
+
+}
+
+@media (max-width: 576px) {
+  .card-body {
+    margin-top: 0px !important;
+
+
+  }
+}
+.cart-count {
+  color: rgb(0, 0, 0);                
+  padding: 4px 8px;            
+  font-size: 12px;             
+  position: absolute;          
+  top: 12px;                  
+  right: -14px;               
+  min-width: 20px;             
+  text-align: center;         
+  font-weight: bold;           
+}
+.container {
+  max-width: 95% !important; /* העמוד יהיה רחב יותר */
+}
+
+.img-fluid {
+  max-width: 100%; 
+  height: auto;
+}
+
+.card-body {
+  padding: 30px; /* יוצר ריווח נוח בין התוכן */
+}
+
+@media (max-width: 768px) {
+  .row {
+      flex-direction: column-reverse; /* במסכים קטנים, הטקסט מעל והתמונה מתחת */
+  }
+}
+.product-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* מביא את הכפתור לתחתית */
+  height: 100%;
+}
+/* עבור מסכים קטנים יותר */
+@media (max-width: 768px) {
+  .my-button {
+    width: 80%; /* במסכים קטנים, רוחב הכפתור יהיה 80% */
+  }
+}
+#countdown-timer .timer-box {
+  background-color: #f8f9fa;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 10px 15px;
+  min-width: 70px;
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+  font-size: 16px;
+}
+
+#countdown-timer .timer-box span {
+  font-size: 20px;
+  display: block;
+}
+.fixed-product-image {
+  width: 450px;      /* או כל גודל שמתאים לך */
+  height: 450px;
+  object-fit: cover; /* חותך או ממלא את השטח מבלי לעוות את התמונה */
+  border-radius: 10px; /* אופציונלי: עיגול פינות לתמונה */
+}

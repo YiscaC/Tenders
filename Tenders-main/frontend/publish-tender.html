@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="publish-tender.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פרסום מכרז</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="publish-tender.css" rel="stylesheet" />
+    <script src="publish-tender.js"></script>
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container d-flex justify-content-start align-items-center">
+            <a class="navbar-brand" href="#">
+                <img src="image/il.png" alt="Logo" width="20" class="d-inline-block align-text-top">
+            </a>
+            <a class="navbar-brand" href="home.html" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                title="דף הבית">
+                <i class="bi bi-house my-button"></i>
+            </a>
+            <a class="navbar-brand position-relative" href="cart.html" data-bs-toggle="tooltip" data-bs-placement="bottom" title="עגלת קניות">
+                <i class="bi bi-cart3 my-button"></i>
+                <span id="cart-count" class="cart-count"></span> 
+            </a>
+            <a id="loginButton" class="navbar-brand" href="login.html" data-bs-toggle="tooltip"
+                data-bs-placement="bottom" title="התחבר">
+                <i class="bi bi-person my-button"></i>
+            </a>
+            <span id="user-nav-item" style="display: none;"></span>
+        </div>
+    </nav>
+    <div class="container auction-container">
+        <h2 id="category-title" class="mb-4"></h2>
+        <form id="auction-form">
+              <!-- שם המוצר -->
+              <div class="mb-3">
+                <label for="productName" class="form-label">שם המוצר</label>
+                <input type="text" class="form-control" id="productName" required>
+            </div>
+
+            <!-- תיאור המוצר -->
+            <div class="mb-3">
+                <label for="productDescription" class="form-label">תיאור המוצר</label>
+                <textarea class="form-control" id="productDescription" rows="3" required></textarea>
+            </div>
+            <div id="dynamic-questions"></div>
+            <!-- מחיר פתיחה -->
+            <div class="mb-3">
+                <label for="startingPrice" class="form-label">מחיר פתיחה </label>
+                <input type="number" class="form-control" id="startingPrice" min="1" required>
+            </div>
+
+            <!-- העלאת תמונה -->
+            <div class="mb-3">
+                <label for="productImage" class="form-label">העלאת תמונה</label>
+                <input type="file" class="form-control" id="productImage" accept="image/*" required>
+            </div>
+
+            <!-- משך המכרז -->
+            <div class="mb-3">
+                <label for="auctionDuration" class="form-label">משך המכרז</label>
+                <select class="form-select" id="auctionDuration" required>
+                    <option value="1">יום 1</option>
+                    <option value="3">3 ימים</option>
+                    <option value="7">7 ימים</option>
+                    <option value="14">14 ימים</option>
+                    <option value="21">21 ימים</option>
+                    <option value="30">30 ימים</option>
+                </select>
+            </div>
+
+        
+<!-- כפתור תשלום ראשוני -->
+<div class="text-center mt-4">
+    <button id="open-payment-form" class="btn btn-primary">💳 שלם 100 ש"ח</button>
+</div>
+
+<!-- טופס תשלום מדומה (מוסתר בהתחלה) -->
+<div id="payment-form" class="payment-container" style="display: none;">
+    <h4>💳 פרטי תשלום</h4>
+
+    <label for="card-number" class="form-label">מספר כרטיס אשראי</label>
+    <input type="text" class="form-control" id="card-number" placeholder="1234 5678 9012 3456" required>
+
+    <label for="card-expiry" class="form-label">תוקף</label>
+    <input type="text" class="form-control" id="card-expiry" placeholder="MM/YY" required>
+
+    <label for="card-cvv" class="form-label">CVV</label>
+    <input type="text" class="form-control" id="card-cvv" placeholder="123" required>
+
+    <label for="card-holder" class="form-label">שם בעל הכרטיס</label>
+    <input type="text" class="form-control" id="card-holder" placeholder="ישראל ישראלי" required>
+
+    <!-- כפתור אישור תשלום -->
+    <div class="text-center mt-3">
+        <button id="confirm-payment-button" class="btn btn-secondary mt-3" disabled>
+            אישור תשלום ופרסום המכרז
+        </button>
+    </div>
+    
+</div>
+
+<!-- כפתור פרסום מכרז (מושבת עד שהתשלום יאושר) 
+<button type="submit" id="publish-button" class="btn btn-success w-100 mt-3" disabled>פרסם מכרז</button>
+
+-->
+        
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // קבלת הפרמטרים מה-URL
+            const params = new URLSearchParams(window.location.search);
+            const category = params.get("category");
+            const categoryTitle = {
+                jewelry: "תכשיטים",
+                electronics: "אלקטרוניקה",
+                Electrical_appliances: "מכשירי חשמל",
+                car: "רכבים",
+                furniture: "רהיטים",
+                animals: "בעלי חיים"
+            };
+
+            // שינוי הכותרת בהתאם לקטגוריה
+            document.getElementById("category-title").textContent = "פרסום מכרז - " + (categoryTitle[category] || "קטגוריה לא ידועה");
+
+            // יצירת שאלות דינמיות לפי קטגוריה
+            const dynamicQuestions = {
+                jewelry: [
+                { label: "חומר", id: "material", type: "text" },
+                { label: "משקל (גרם)", id: "weight", type: "number" }
+              ],
+               furniture: [
+              { label: "חומר", id: "material", type: "text" },
+              { label: "מידות", id: "dimensions", type: "text" }
+              ],
+               car: [
+              { label: "שנת ייצור", id: "year_of_manufacture", type: "number" },
+              { label: "קילומטראז'", id: "kilometers", type: "number" }
+             ],
+              electronics: [
+             { label: "מצב (חדש/משומש)", id: "condition", type: "text" },
+             { label: "שנת ייצור", id: "year_of_manufacture", type: "number" }
+             ],
+              animals: [
+             { label: "גזע", id: "breed", type: "text" },
+             { label: "גיל (בשנים)", id: "age", type: "number" }
+            ],
+             Electrical_appliances: [
+             { label: "מידות", id: "dimensions", type: "text" }
+            ]
+            };
+
+            // הוספת השאלות הדינמיות לטופס
+            const questionsContainer = document.getElementById("dynamic-questions");
+
+            if (dynamicQuestions[category]) {
+                questionsContainer.innerHTML = ""; // לנקות לפני הוספה
+                dynamicQuestions[category].forEach(q => {
+                    const div = document.createElement("div");
+                    div.classList.add("mb-3");
+                    div.innerHTML = `
+                        <label class="form-label" for="${q.id}">${q.label}</label>
+                        <input type="${q.type}" class="form-control" id="${q.id}" name="${q.id}" required>`;
+                    questionsContainer.appendChild(div);
+                });
+            }            
+        });
+    </script>
+</body>
+</html>

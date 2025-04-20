@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>Home</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container d-flex justify-content-start align-items-center">
+            <a id="publishTenderButton" class="btn btn-primary me-3" href="categories.html">
+                פרסום מכרז
+            </a> 
+            <button class="navbar-toggler my-button" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#navbarOffcanvasLg" aria-controls="navbarOffcanvasLg" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div style="flex-grow: 1"></div>
+                      
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="navbarOffcanvasLg"
+                aria-labelledby="navbarOffcanvasLgLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="navbarOffcanvasLgLabel">תפריט</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link my-button" href="#" data-filter="all">כל המוצרים</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link my-button" href="#" data-filter="furniture">רהיטים</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link my-button" href="#" data-filter="Electrical_appliances">מוצרי חשמל</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link my-button" href="#" data-filter="car">רכבים</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link my-button" href="#" data-filter="animals">בעלי חיים</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link my-button" href="#" data-filter="electronics">אלקטרוניקה</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link my-button" href="#" data-filter="jewelry">תכשיטים</a>
+                        </li>
+                    </ul>                    
+                </div>
+            </div>
+            
+            <span id="user-nav-item" style="display: none;"></span>
+            <a class="navbar-brand position-relative" href="cart.html" data-bs-toggle="tooltip" data-bs-placement="bottom" title="עגלת קניות">
+                <i class="bi bi-cart3 my-button"></i>
+                <span id="cart-count" class="cart-count"></span> 
+            </a>
+            
+            <a id="loginButton" class="navbar-brand" href="login.html" data-bs-toggle="tooltip"
+                data-bs-placement="bottom" title="התחבר">
+                <i class="bi bi-person my-button"></i>
+            </a>
+            <a id="deleteUserButton" class="navbar-brand" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                title="מחק משתמש">
+                <i class="bi bi-person-x my-button"></i>
+            </a>
+            <a class="navbar-brand" href="profile.html" data-bs-toggle="tooltip" data-bs-placement="bottom" title="האזור האישי שלי">
+                <i class="bi bi-person-vcard my-button"></i>
+            </a>
+            <a id="logoutButton" style="display: none;" class="navbar-brand" href="#" data-bs-toggle="tooltip"
+                data-bs-placement="bottom" title="התנתק">
+                <i class="bi bi-escape my-button"></i>
+            </a>
+            <a class="navbar-brand" href="#">
+                <img src="image/il.png" alt="Logo" width="20" class="d-inline-block align-text-top">
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row listProduct"></div>
+    </div>
+    <div id="bthn" lang="he"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="Cart.js"></script>
+    <script src="app.js"></script>
+    <script src="user.js"></script>
+  
+    <!-- הוספת ספריות Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+
+
+
+</body>
+
+</html>

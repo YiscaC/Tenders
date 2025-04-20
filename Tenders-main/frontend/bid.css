@@ -1,0 +1,32 @@
+
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .bid-container {
+      max-width: 700px;
+      margin: 80px auto;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-image {
+        max-width: 250px;
+        width: 100%;
+        border-radius: 10px;
+      }
+
+    .form-control {
+      text-align: right;
+    }
+
+    .credit-card input {
+      margin-bottom: 10px;
+    }
+
+    .error-msg {
+      color: red;
+      font-weight: bold;
+    }

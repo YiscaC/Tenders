@@ -1,0 +1,168 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="StyleSheet1.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title> עגלת קניות</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container d-flex justify-content-start align-items-center">
+            <a class="navbar-brand" href="#">
+                <img src="image/il.png" alt="Logo" width="20" class="d-inline-block align-text-top">
+            </a>
+            <a class="navbar-brand" href="home.html" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                title="דף הבית">
+                <i class="bi bi-house my-button"></i>
+            </a>
+            <a id="loginButton" class="navbar-brand" href="login.html" data-bs-toggle="tooltip"
+                data-bs-placement="bottom" title="התחבר">
+                <i class="bi bi-person my-button"></i>
+            </a>
+            <span id="user-nav-item" style="display: none;"></span>
+        </div>
+    </nav>
+
+    <div class="container container2">
+        <h1>עגלת קניות</h1>
+        <div id="cart"></div>
+        <div class="total" id="total"></div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                renderCart(); // קריאה לפונקציה ברגע שהעמוד נטען
+            });
+
+            async function renderCart() {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const userName = user ? user.name : null; // קבלת שם המשתמש מהלוקל סטורג'
+
+                console.log("User Name:", userName); // הדפסה של שם המשתמש
+
+                // ננסה קודם כל לטעון את העגלה מה-LocalStorage
+                let cartItems = loadCartFromLocalStorage();
+
+                // אם אין פריטים ב-LocalStorage, נשלוף מהשרת
+                if (cartItems.length === 0) {
+                    cartItems = await fetchCart(userName);
+                }
+
+                // ניהול ההצגה של העגלה
+                //document.getElementById("rend").style.display = "none";
+                document.getElementById("topay").style.display = "inline";
+                var cartDiv = document.getElementById('cart');
+                var totalDiv = document.getElementById('total');
+                cartDiv.innerHTML = '';
+                totalDiv.textContent = '';
+
+                if (cartItems.length === 0) {
+                    cartDiv.innerHTML = 'אין מוצרים להצגה';
+                } else {
+                    cartItems.forEach(function (item, index) {
+                        var itemDiv = document.createElement('div');
+                        itemDiv.classList.add('item');
+                        var itemImg = document.createElement('img');
+                        itemImg.src = item.productImage;
+                        itemDiv.appendChild(itemImg);
+
+                        var itemName = document.createElement('span');
+                        itemName.textContent = item.productName;
+                        itemDiv.appendChild(itemName);
+
+                        var itemPrice = document.createElement('span');
+                        itemPrice.textContent = 'price: ' + item.productPrice + '$';
+                        itemDiv.appendChild(itemPrice);
+
+                        var quantityDiv = document.createElement('div');
+                        quantityDiv.classList.add('quantity');
+
+                        var quantityInput = document.createElement('input');
+                        quantityInput.type = 'number';
+                        quantityInput.value = item.quantity;
+                        quantityInput.min = '1';
+                        quantityInput.addEventListener('input', function () {
+                            changeQuantity(index, parseInt(this.value));
+                        });
+                        quantityDiv.appendChild(quantityInput);
+
+                        var removeButton = document.createElement('button');
+                        removeButton.innerHTML = '<i class="bi bi-trash" data-bs-toggle="tooltip" data-bs-placement="bottom" title="הסר מוצר"></i>';
+                        removeButton.addEventListener('click', function () {
+                            removeFromCart(index);
+                        });
+                        quantityDiv.appendChild(removeButton);
+                        itemDiv.appendChild(quantityDiv);
+
+                        cartDiv.appendChild(itemDiv);
+                    });
+
+                    // חישוב הסכום הכולל
+                    var totalAmount = calculateTotal(cartItems);
+                    totalDiv.textContent = 'sum: ' + totalAmount + '$';
+                }
+            }
+        </script>
+        <button id="topay" onclick="openModal()"  style="display:none; width: 100%;">לתשלום</button>
+    </div>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h7>:מלא את השדות הבאים</h7>
+            <form>
+                <div class="form-group mt-3 mb-3">
+                    <input type="text" class="form-control" id="name" oninput="validateName()" placeholder="שם מלא"
+                        required data-bs-toggle="tooltip" title="הכנס את שם המלא שלך">
+                    <span id="nameError" style="color: red; font-size: 12px;"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <input type="text" class="form-control" id="creditCard" oninput="validatecreditCard()"
+                        placeholder="מספר כרטיס אשראי" required data-bs-toggle="tooltip"
+                        title=" הכנס את מספר כרטיס אשראי">
+                    <span id="creditCardError" style="color: red; font-size: 12px;"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <input type="text" class="form-control" id="tokef" oninput="validatetokef()" placeholder="תוקף"
+                        required data-bs-toggle="tooltip" title=" הכנס את תוקף אשראי תאריך ">
+                    <span id="tokefError" style="color: red; font-size: 12px;"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <input type="text" class="form-control" id="tokef2" oninput="validatetokef2()"
+                        placeholder="3 ספרות בגב הכרטיס" required data-bs-toggle="tooltip"
+                        title="הכנס 3 ספרות שבגב הכרטיס">
+                    <span id="tokef2Error" style="color: red; font-size: 12px;"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <input type="text" class="form-control" id="idown" oninput="validateidown()"
+                        placeholder="תז של בעל הכרטיס" required data-bs-toggle="tooltip"
+                        title="הכנס את התז של בעל הכרטיס">
+                    <span id="idownError" style="color: red; font-size: 12px;"></span>
+                </div>
+                <div class="form-group mb-3 text-right">
+                    <textarea class="form-control" id="comments" rows="3" placeholder=":הערות"></textarea>
+                </div>
+                <button type="button" onclick="clearCart()">אישור</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script src="user.js"></script>
+    <script src="Cart.js"></script>
+
+
+
+</body>
+
+</html>

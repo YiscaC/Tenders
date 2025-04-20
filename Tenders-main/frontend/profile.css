@@ -1,0 +1,168 @@
+/* פריסת כלל הדף */
+body {
+    direction: rtl;
+    font-family: 'Segoe UI', sans-serif;
+    margin-top: 0;
+    padding-top: 50;
+    display: flex;
+    background-color: #f9f9f9;
+}
+
+/* תפריט צד */
+.sidebar {
+    width: 270px;
+    background-color: #2c3e50;
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
+    padding-top: 70px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    position: fixed;
+    right: 0;
+    top: 0;
+    transition: transform 0.3s ease;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 15px 0;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    display: block;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #34495e;
+}
+
+/* תוכן מרכזי */
+.main-content {
+    margin-right: 270px; /* כמו הסיידבר */
+    padding: 30px;
+    max-width: calc(100% - 300px); /* אופציונלי */
+}
+
+/* אייקון תפריט במסך קטן */
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    font-size: 24px;
+    padding: 10px 14px;
+    border-radius: 5px;
+    z-index: 1001;
+}
+
+/* עיצוב כרטיס מכרז */
+.auction-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* רספונסיביות לניידים */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(100%);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-right: 0;
+        padding: 20px;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+}
+.menu-section {
+    margin-top: 30px;
+}
+
+.menu-section h4 {
+    font-size: 16px;
+    color: #ecf0f1;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 5px;
+}
+.auction-item {
+    position: relative;
+    padding: 15px;
+    margin-bottom: 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    min-width: 300px;
+    max-width: 100%;
+    width: 100%; /* ✅ חשוב לעבודה תקינה עם grid */
+    box-sizing: border-box;
+
+}
+
+.auction-item .button-group {
+    position: absolute;
+    top: 10px;
+    left: 10px; /* ✅ הצמדה לשמאל */
+    display: flex;
+    gap: 10px;
+}
+
+.auction-item .btn {
+    background: transparent !important;
+    border: none !important;
+    padding: 6px;
+    box-shadow: none;
+    color: #555;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border-radius: 6px;
+    display: inline-flex;            /* ממרכז את האייקון */
+    align-items: center;
+    justify-content: center;
+ 
+
+}
+
+.auction-item .btn:hover {
+    background-color: rgba(0, 0, 0, 0.07); /* ✅ רקע בהיר-כהה במעבר */
+    color: #000;                           /* טיפה כהות לטקסט */
+}
+
+.auction-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+.hidden {
+    display: none;
+}

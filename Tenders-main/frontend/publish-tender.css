@@ -1,0 +1,31 @@
+.auction-container {
+    max-width: 800px; /* קובע רוחב מקסימלי לטופס */
+    margin: auto; /* ממרכז את הטופס בעמוד */
+    padding: 20px; /* מוסיף קצת רווח פנימי */
+}
+
+/* הוספת רווח אחרי כפתור הפרסום */
+#auction-form {
+    padding-bottom:20px; /* יוצר שוליים בתחתית */
+}
+.auction-container h2{
+    margin-top: 20px; /* מרווח של 80px מלמעלה */
+    text-align: center;
+}
+.auction-container {
+    max-width: 700px; /* קובע רוחב מקסימלי לטופס */
+    margin: auto; /* ממרכז את הטופס בעמוד */
+    padding: 30px; /* מוסיף רווח פנימי */
+    background: #ffffff; /* רקע לבן */
+    border-radius: 15px; /* פינות מעוגלות */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* צל עדין */
+    border: 1px solid #ddd; /* מסגרת עדינה */
+    margin-bottom: 30px;
+    margin-top: 90px;
+}
+
+
+/* הוספת רווח אחרי כפתור הפרסום */
+#auction-form {
+    padding-bottom: 30px; /* יוצר שוליים בתחתית */
+}

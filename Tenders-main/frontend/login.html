@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container d-flex justify-content-start align-items-center">
+            <a class="navbar-brand">
+                <img src="image/il.png" alt="Logo" width="20" class="d-inline-block align-text-top">
+            </a>
+            <a class="navbar-brand" href="home.html" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                title="דף הבית">
+                <i class="bi bi-house my-button"></i>
+            </a>
+            <span id="user-nav-item" style="display: none;"></span>
+        </div>
+    </nav>
+
+
+    <div class="container-fluid mt-4">
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="col-6">
+                <div class="card mx-auto mt-3">
+                    <div class="card-header bg-light">
+                        <h2 class="text-center mt-3">כניסה לאתר</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="loginForm">
+                            <label class="form-label" for="login-email">אימייל</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-envelope-fill"></i>
+                                </span>
+                                <input class="form-control" type="email" id="login-email" name="email" required
+                                    data-bs-toggle="tooltip" title="הכנס את כתובת האימייל שלך">
+                            </div>
+                            
+                            <label class="form-label mt-2" for="login-password">סיסמה</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-key-fill"></i>
+                                </span>
+                                <input class="form-control" type="password" id="login-password" name="password" required
+                                    data-bs-toggle="tooltip" title="הכנס את הסיסמה שלך">
+                            </div>
+                            <div class="text-center mt-2">
+                                <input class="form-control my-button mb-2" type="button" value="משתמש חדש"
+                                    data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <input class="form-control my-button" type="submit" value="כניסה">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="alert-container" class="container mt-3"></div>
+
+    <!-- Modal -->
+    <div class="modal-content">
+        <div class="container-fluid mt-4">
+            <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title w-100 text-center" id="registerModalLabel">הרשמה לאתר</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="registerForm">
+                                <label class="form-label" for="register-username">שם משתמש</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-person-fill"></i>
+                                    </span>
+                                    <input class="form-control" type="text" id="register-username" name="name" required
+                                        data-bs-toggle="tooltip" title="הכנס את שם המשתמש שלך">
+                                </div>
+                                <label class="form-label mt-2" for="register-email">אימייל</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-envelope-fill"></i>
+                                    </span>
+                                    <input class="form-control" type="email" id="register-email" name="email" required
+                                        data-bs-toggle="tooltip" title="הכנס את כתובת האימייל שלך">
+                                </div>
+                                <label class="form-label mt-2" for="register-password">סיסמה</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-key-fill"></i>
+                                    </span>
+                                    <input class="form-control" type="password" id="register-password" name="password"
+                                        required data-bs-toggle="tooltip" title="הכנס סיסמה חזקה">
+                                </div>
+                                <div class="text-center mt-2">
+                                    <input class="form-control my-button mt-3" type="submit" value="הירשם">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script src="user.js"></script>
+
+    <script>
+        // Initialize tooltips
+        $(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+    </script>
+
+</body>
+
+</html>
