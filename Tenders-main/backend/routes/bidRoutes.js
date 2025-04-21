@@ -10,6 +10,8 @@ router.post("/submit", bidController.submitBid);
 router.get('/by-user/:email', bidController.getBidsByUser);
 router.get('/wins/:email', bidController.getWonAuctionsByUser);
 // routes/notificationRoutes.js
+// routes/bidRoutes.js
+router.get('/by-auction/:auctionId', bidController.getBidsByAuction);
 
 
 

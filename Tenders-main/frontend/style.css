@@ -38,4 +38,110 @@
   max-width: 250px; /* או כל ערך שמתאים לעיצוב שלך */
   margin: auto;
 }
+.login-card {
+  max-width: 600px;
+  min-height: 450px;
+  padding: 40px;
+  direction: rtl;
+  text-align: right;
+  border: 1.5px solid #999; /* כהה יותר מהברירת מחדל */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+.input-group-text, .form-label, .form-control {
+  direction: rtl;
+  text-align: right;
+}
+.my-button {
+  text-align: center !important;
+  transition: background-color 0.3s ease;
+  margin-bottom: 8px; /* רווח */
+  border-radius: 8px; 
+  text-align: center !important;
+  transition: background-color 0.3s ease;
+}
+.login-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 25px;
+  padding-bottom: 0;
+  border-bottom: none;
+  background: none;
+}
+
+/* כהות במעבר עכבר */
+.my-button:hover {
+  background-color: #e2e6ea;
+}
+.card-header {
+  border-bottom: none !important;
+
+}
+.modal-dialog {
+  max-width: 600px;
+}
+
+.modal-content {
+  padding: 25px;
+}
+#registerModal .form-label {
+  direction: rtl !important;
+  text-align: right !important;
+  display: block;
+}
+.register-title {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 auto;
+  padding: 15px 0;
+  background-color: #f8f9fa; /* רקע אפור בהיר */
+  border: none;
+  border-radius: 10px; /* עיגול פינות */
+}
+.modal-close-top {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 1;
+}
+.input-group-rtl {
+  direction: rtl;
+  flex-direction: row-reverse;
+}
+.input-group-rtl .form-control {
+  text-align: right;
+}
+.input-group-rtl {
+  direction: rtl;
+  flex-direction: row-reverse;
+}
+
+.modal-header {
+  border-bottom: none !important;
+}
+.login-card form .text-center {
+  margin-top: 24px; /* או 32px לפי הצורך */
+}
+.form-button {
+  text-align: center !important;
+  transition: background-color 0.3s ease;
+  margin-bottom: 8px;
+  margin-top: 12px;
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.form-button:hover {
+  background-color: #e2e6ea;
+}
+
+
+
+
+
 

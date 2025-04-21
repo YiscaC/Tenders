@@ -71,6 +71,7 @@ function renderAuctions(auctions, containerPrefix) {
         return; // חשוב! לא להמשיך לתחתית הפונקציה
     }
     
+    
 
     // ✨ ברירת מחדל – עבור my-auctions / my-bids
     const activeContainer = document.getElementById(`${containerPrefix}-active`);
@@ -92,7 +93,7 @@ function renderAuctions(auctions, containerPrefix) {
         return;
     }
     
-    auctions.forEach(a => {
+    auctions.forEach( async a => {
         const endDate = new Date(a.createdAt);
         endDate.setDate(endDate.getDate() + a.duration_days);
         const now = new Date();
@@ -130,6 +131,41 @@ function renderAuctions(auctions, containerPrefix) {
             btnGroup.appendChild(editBtn);
             btnGroup.appendChild(deleteBtn);
             div.appendChild(btnGroup);
+            if (containerPrefix === "my-auctions") {
+                const bidsRes = await fetch(`http://localhost:3001/api/bids/by-auction/${a._id}`);
+                const bids = await bidsRes.json();
+            
+                if (bids.length > 0) {
+                    const bidsList = document.createElement("div");
+                    bidsList.className = "bid-list";
+                    bidsList.style.marginTop = "10px";
+                    
+                    bids.forEach(b => {
+                        const bidItem = document.createElement("div");
+                        bidItem.className = "bid-item";
+                        bidItem.innerHTML = `
+                            <div><strong>₪${b.amount}</strong></div>
+                            <div>🕒 ${new Date(b.createdAt).toLocaleString()}</div>
+                            <div>👤 ${b.userName}</div>
+                        `;
+                        bidsList.appendChild(bidItem);
+                    });                    
+            
+                    const showBidsBtn = document.createElement("button");
+                    showBidsBtn.className = "btn btn-sm btn-secondary mt-2";
+                    showBidsBtn.textContent = "הצג הצעות";
+                    showBidsBtn.onclick = () => {
+                        const visible = bidsList.style.display !== "none";
+                        bidsList.style.display = visible ? "none" : "block";
+                        showBidsBtn.textContent = visible ? "הצג הצעות" : "הסתר הצעות";
+                    };
+            
+                    div.appendChild(showBidsBtn);
+                    div.appendChild(bidsList);
+                    bidsList.style.display = "none"; // ברירת מחדל מוסתר
+                }
+            }
+            
         }
 
         if (isActive) {
@@ -289,11 +325,14 @@ function renderGroupedBids(groupedBids) {
             <h4>${auction.product_name}</h4>
             <p>${auction.description || ''}</p>
             <button class="btn btn-sm btn-info" onclick='toggleBidList(this)'>הצג הצעות</button>
-            <ul class="bid-list" style="display:none; padding-right: 0; list-style: none; margin-top: 10px;">
+            <div class="bid-list" style="display:none; margin-top: 10px;">
                 ${bids.map(b => `
-                    <li>₪${b.amount} - ${new Date(b.createdAt).toLocaleString()}</li>
+                    <div class="bid-item">
+                        <div><strong>₪${b.amount}</strong></div>
+                        <div>🕒 ${new Date(b.createdAt).toLocaleString()}</div>
+                    </div>
                 `).join('')}
-            </ul>
+            </div>
         `;
 
         if (isActive) {

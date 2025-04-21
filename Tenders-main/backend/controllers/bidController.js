@@ -1,4 +1,5 @@
 const Bid = require("../models/bidModel");
+const User = require("../models/userModel");
 
 exports.submitBid = async (req, res) => {
   const { auctionId, userEmail, amount } = req.body;
@@ -161,5 +162,27 @@ exports.checkEndedAuctionsNotifications = async (req, res) => {
     res.status(500).json({ error: "שגיאה בבדיקת התראות" });
   }
 };
+
+// הצגת רשימת ההצעות למשתמש שהעלה את המכרז
+exports.getBidsByAuction = async (req, res) => {
+  try {
+    const bids = await Bid.find({ auctionId: req.params.auctionId });
+
+    // מצרפים שם משתמש לכל הצעה על פי userEmail
+    const enrichedBids = await Promise.all(bids.map(async bid => {
+      const user = await User.findOne({ email: bid.userEmail });
+      return {
+        ...bid.toObject(),
+        userName: user ? user.name : "משתמש לא מזוהה"
+      };
+    }));
+
+    res.json(enrichedBids);
+  } catch (err) {
+    console.error("❌ שגיאה בשליפת הצעות:", err);
+    res.status(500).json({ message: 'שגיאה בשליפת הצעות' });
+  }
+};
+
 
 

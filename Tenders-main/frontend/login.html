@@ -31,33 +31,34 @@
     <div class="container-fluid mt-4">
         <div class="d-flex justify-content-center align-items-center">
             <div class="col-6">
-                <div class="card mx-auto mt-3">
+                <div class="card login-card mx-auto mt-3">
                     <div class="card-header bg-light">
-                        <h2 class="text-center mt-3">כניסה לאתר</h2>
+                        <h2 class="login-title">🔐 כניסה לאתר</h2>
                     </div>
                     <div class="card-body">
                         <form id="loginForm">
                             <label class="form-label" for="login-email">אימייל</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-envelope-fill"></i>
-                                </span>
-                                <input class="form-control" type="email" id="login-email" name="email" required
-                                    data-bs-toggle="tooltip" title="הכנס את כתובת האימייל שלך">
-                            </div>
-                            
-                            <label class="form-label mt-2" for="login-password">סיסמה</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-key-fill"></i>
-                                </span>
-                                <input class="form-control" type="password" id="login-password" name="password" required
-                                    data-bs-toggle="tooltip" title="הכנס את הסיסמה שלך">
-                            </div>
-                            <div class="text-center mt-2">
-                                <input class="form-control my-button mb-2" type="button" value="משתמש חדש"
-                                    data-bs-toggle="modal" data-bs-target="#registerModal">
-                                <input class="form-control my-button" type="submit" value="כניסה">
+                                <div class="input-group input-group-rtl">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-envelope-fill"></i>
+                                    </span>
+                                    <input class="form-control" type="email" id="login-email" name="email" required
+                                        data-bs-toggle="tooltip" title="הכנס את כתובת האימייל שלך">
+                                </div>
+
+                                <label class="form-label mt-2" for="login-password">סיסמה</label>
+                                <div class="input-group input-group-rtl">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-key-fill"></i>
+                                    </span>
+                                    <input class="form-control" type="password" id="login-password" name="password" required
+                                        data-bs-toggle="tooltip" title="הכנס את הסיסמה שלך">
+                                </div>
+
+                            <div class="text-center mt-3">
+                                <input class="form-control form-button" type="submit" value="כניסה">                                                      
+                                <input class="form-control form-button mb-2" type="button" value="משתמש חדש"
+                                data-bs-toggle="modal" data-bs-target="#registerModal">
                             </div>
                         </form>
                     </div>
@@ -74,14 +75,15 @@
                 aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
+                        <!-- כפתור סגירה מעל הכותרת -->
+                        <button type="button" class="btn-close modal-close-top" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div class="modal-header">
-                            <h5 class="modal-title w-100 text-center" id="registerModalLabel">הרשמה לאתר</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
+                        <h5 class="modal-title w-100 text-center register-title" id="registerModalLabel" dir="rtl">📝 הרשמה לאתר</h5>
+                        </div>                       
                         <div class="modal-body">
                             <form id="registerForm">
-                                <label class="form-label" for="register-username">שם משתמש</label>
-                                <div class="input-group">
+                                <label class="form-label" for="register-username">שם פרטי</label>
+                                <div class="input-group input-group-rtl">
                                     <span class="input-group-text">
                                         <i class="bi bi-person-fill"></i>
                                     </span>
@@ -89,7 +91,7 @@
                                         data-bs-toggle="tooltip" title="הכנס את שם המשתמש שלך">
                                 </div>
                                 <label class="form-label mt-2" for="register-email">אימייל</label>
-                                <div class="input-group">
+                                <div class="input-group input-group-rtl">
                                     <span class="input-group-text">
                                         <i class="bi bi-envelope-fill"></i>
                                     </span>
@@ -97,7 +99,7 @@
                                         data-bs-toggle="tooltip" title="הכנס את כתובת האימייל שלך">
                                 </div>
                                 <label class="form-label mt-2" for="register-password">סיסמה</label>
-                                <div class="input-group">
+                                <div class="input-group input-group-rtl">
                                     <span class="input-group-text">
                                         <i class="bi bi-key-fill"></i>
                                     </span>
@@ -105,7 +107,7 @@
                                         required data-bs-toggle="tooltip" title="הכנס סיסמה חזקה">
                                 </div>
                                 <div class="text-center mt-2">
-                                    <input class="form-control my-button mt-3" type="submit" value="הירשם">
+                                    <input class="form-control form-button mt-3" type="submit" value="הירשם">
                                 </div>
                             </form>
                         </div>

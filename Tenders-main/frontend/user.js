@@ -145,6 +145,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // איפוס שדות טופס ההרשמה כאשר סוגרים את המודל
+const registerModalElement = document.getElementById('registerModal');
+if (registerModalElement) {
+    registerModalElement.addEventListener('hidden.bs.modal', () => {
+        const registerForm = document.getElementById('registerForm');
+        if (registerForm) registerForm.reset();
+    });
+}
+
     // מטפל בהצגת פרטי המשתמש והכפתורים בהתאם למצב ההתחברות
     const storedUser = localStorage.getItem('user');
     const userNavItem = document.getElementById('user-nav-item');
