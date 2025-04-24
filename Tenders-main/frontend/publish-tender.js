@@ -168,7 +168,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const startingPrice = document.getElementById("startingPrice").value.trim();
     const auctionDuration = document.getElementById("auctionDuration").value.trim();
     const productImage = document.getElementById("productImage").files.length > 0; // לבדוק אם הועלתה תמונה
-
+    const checkbox1 = document.getElementById("terms-1").checked;
+    const checkbox2 = document.getElementById("terms-2").checked;
+    
           // בדיקת האם כל הפרטים מלאים
     if (
         cardNumber.value.length === 16 &&
@@ -179,7 +181,9 @@ document.addEventListener("DOMContentLoaded", function () {
         productDescription !== "" &&
         startingPrice !== "" &&
         auctionDuration !== "" &&
-        productImage
+        productImage&&
+        checkbox1 &&
+        checkbox2
     ) {
             confirmPaymentButton.disabled = false; // הפעלת כפתור אישור תשלום
         } else {
@@ -192,6 +196,8 @@ document.addEventListener("DOMContentLoaded", function () {
     cardExpiry.addEventListener("input", checkPaymentFields);
     cardCVV.addEventListener("input", checkPaymentFields);
     cardHolder.addEventListener("input", checkPaymentFields);
+document.getElementById("terms-1").addEventListener("change", checkPaymentFields);
+document.getElementById("terms-2").addEventListener("change", checkPaymentFields);
 
     // אישור תשלום לאחר לחיצה
     confirmPaymentButton.addEventListener("click", function () {

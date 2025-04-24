@@ -3,7 +3,7 @@ const router = express.Router();
 const bidController = require("../controllers/bidController");
 
 // שליפת ההצעה הגבוהה ביותר
-router.get("/highest/:auctionId", bidController.getHighestBid);
+router.get("/highest/:auctionId", bidController.getHighestBidByAuction);
 
 // שמירת הצעת מחיר
 router.post("/submit", bidController.submitBid);
@@ -12,6 +12,7 @@ router.get('/wins/:email', bidController.getWonAuctionsByUser);
 // routes/notificationRoutes.js
 // routes/bidRoutes.js
 router.get('/by-auction/:auctionId', bidController.getBidsByAuction);
+
 
 
 

@@ -1,5 +1,6 @@
 <head> 
     <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -8,42 +9,58 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container d-flex justify-content-start align-items-center">
-            <a class="navbar-brand">
-                <img src="image/il.png" alt="Logo" width="20" class="d-inline-block align-text-top">
-            </a>
-            <a class="navbar-brand" href="home.html" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                title="דף הבית">
-                <i class="bi bi-house my-button "></i>
-            </a>
-            <a class="navbar-brand position-relative" href="cart.html" data-bs-toggle="tooltip" data-bs-placement="bottom" title="עגלת קניות">
-                <i class="bi bi-cart3 my-button"></i>
-                <span id="cart-count" class="cart-count"></span> 
-            </a>
+            <button class="navbar-toggler my-button" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#navbarOffcanvasLg" aria-controls="navbarOffcanvasLg" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+    
+            <div style="flex-grow: 1"></div>
+    
+            <span id="user-nav-item" style="display: none;"></span>
+    
             <a id="loginButton" class="navbar-brand" href="login.html" data-bs-toggle="tooltip"
                 data-bs-placement="bottom" title="התחבר">
                 <i class="bi bi-person my-button"></i>
             </a>
-            <span id="user-nav-item" style="display: none;"></span>
+            <a class="navbar-brand" href="profile.html" data-bs-toggle="tooltip"
+                data-bs-placement="bottom" title="האזור האישי שלי">
+                <i class="bi bi-person-vcard my-button"></i>
+            </a>
+            <a class="navbar-brand" href="home.html" data-bs-toggle="tooltip"
+            data-bs-placement="bottom" title="דף הבית">
+            <i class="bi bi-house my-button"></i>
+          </a>
+            <a id="logoutButton" style="display: none;" class="navbar-brand" href="#" data-bs-toggle="tooltip"
+                data-bs-placement="bottom" title="התנתק">
+                <i class="bi bi-escape my-button"></i>
+            </a>    
+            <!-- הסרט הצהוב בצד שמאל -->
+            <div class="me-auto">
+                <a class="navbar-brand" href="#">
+                    <img src="image/il.png" alt="Logo" width="20" class="d-inline-block align-text-top">
+                </a>
+            </div>
         </div>
-    </nav>
+    </nav>    
+    
 
     <!-- כפתור תפריט לנייד -->
     <button class="menu-toggle" onclick="toggleMenu()">☰</button>
 
     <div class="sidebar" id="sidebar">
-        <h2>שלום <span id="user-name"></span>!</h2>
+        <h2> <span id="user-name"></span></h2>
+        <p> <span id="user-email"></span></p>
         <ul>
             <h4>📦 מכרזים</h4>
             <li><a href="#" onclick="showSection('my-auctions')">📝 המכרזים שפרסמתי</a></li>
             <li><a href="#" onclick="showSection('my-bids')">💰 המכרזים שהצעתי בהם</a></li>
             <li><a href="#" onclick="showSection('my-wins')">🏆 המכרזים שזכיתי בהם</a></li>
-
         </ul>
        
         <ul>
             <h4>👤 פרטים אישיים</h4>
             <li><a href="#" onclick="showSection('edit-profile')">🛠️ ניהול פרטים</a></li>
-            <li><a href="#" onclick="logout()">🚪 התנתקות</a></li>
+            <li><a href="#" onclick="logout()">🚪 מחיקת המשתמש</a></li>
         </ul>
        
 
@@ -105,5 +122,16 @@
     </div>
 
     <script src="profile.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+    <script src="user.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+          tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+          });
+        });
+      </script>
 </body>

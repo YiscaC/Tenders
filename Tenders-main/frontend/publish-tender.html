@@ -12,30 +12,50 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="publish-tender.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css">
     <script src="publish-tender.js"></script>
-
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container d-flex justify-content-start align-items-center">
-            <a class="navbar-brand" href="#">
-                <img src="image/il.png" alt="Logo" width="20" class="d-inline-block align-text-top">
-            </a>
-            <a class="navbar-brand" href="home.html" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                title="דף הבית">
-                <i class="bi bi-house my-button"></i>
-            </a>
-            <a class="navbar-brand position-relative" href="cart.html" data-bs-toggle="tooltip" data-bs-placement="bottom" title="עגלת קניות">
-                <i class="bi bi-cart3 my-button"></i>
-                <span id="cart-count" class="cart-count"></span> 
-            </a>
-            <a id="loginButton" class="navbar-brand" href="login.html" data-bs-toggle="tooltip"
-                data-bs-placement="bottom" title="התחבר">
+            <button class="navbar-toggler my-button" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#navbarOffcanvasLg" aria-controls="navbarOffcanvasLg" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div style="flex-grow: 1"></div>
+                      
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="navbarOffcanvasLg"
+                aria-labelledby="navbarOffcanvasLgLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="navbarOffcanvasLgLabel">תפריט</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+            </div>
+            
+            <span id="user-nav-item" style="display: none;"></span>
+            
+            <a id="loginButton" class="navbar-brand" href="login.html" data-bs-toggle="tooltip" data-bs-placement="bottom" title="התחבר">
                 <i class="bi bi-person my-button"></i>
             </a>
-            <span id="user-nav-item" style="display: none;"></span>
+            <a class="navbar-brand" href="profile.html" data-bs-toggle="tooltip" data-bs-placement="bottom" title="האזור האישי שלי">
+                <i class="bi bi-person-vcard my-button"></i>
+            </a>
+            <a class="navbar-brand" href="home.html" data-bs-toggle="tooltip" data-bs-placement="bottom" title="דף הבית">
+                <i class="bi bi-house my-button"></i>
+              </a>
+            <a id="logoutButton" style="display: none;" class="navbar-brand" href="#" data-bs-toggle="tooltip"
+            data-bs-placement="bottom" title="התנתק">
+             <i class="bi bi-escape my-button"></i>
+           </a>
+
+         <div class="me-auto">
+            <a class="navbar-brand" href="#">
+              <img src="image/il.png" alt="Logo" width="20" class="d-inline-block align-text-top">
+            </a>       
+            </div>            
         </div>
     </nav>
+    
     <div class="container auction-container">
         <h2 id="category-title" class="mb-4"></h2>
         <form id="auction-form">
@@ -76,7 +96,23 @@
                 </select>
             </div>
 
-        
+<div class="form-check mt-3 d-flex justify-content-end align-items-start" dir="rtl">
+  <input class="form-check-input mt-1 ms-2" type="checkbox" id="terms-1">
+  <label class="form-check-label" for="terms-1">
+    אני מאשר/ת כי האתר אינו אחראי לאמינות המשתמשים, ותפקידו מתמצה בהעברת כתובות האימייל בין הצדדים ליצירת קשר בלבד.
+  </label>
+</div>
+
+<div class="form-check mt-2 d-flex justify-content-end align-items-start" dir="rtl">
+  <input class="form-check-input mt-1 ms-2" type="checkbox" id="terms-2">
+  <label class="form-check-label" for="terms-2">
+    אני מאשר/ת כי אוכל למחוק מכרז רק אם לא הוגשה אליו אף הצעת מחיר. אם בכל זאת אבקש למחוק מכרז שהוגשו אליו הצעות, אני מסכים/מה לקנס בסך 30 ש"ח.
+  </label>
+</div>
+
+              
+              
+  
 <!-- כפתור תשלום ראשוני -->
 <div class="text-center mt-4">
     <button id="open-payment-form" class="btn btn-primary">💳 שלם 100 ש"ח</button>
@@ -175,5 +211,9 @@
             }            
         });
     </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="user.js"></script>
+
 </body>
 </html>

@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             let dynamicFieldsHTML = '';
             for (const key in product) {
-                if (!["_id", "product_name", "starting_price", "description", "image_url", "category", "__v", "createdAt", "updatedAt", "user_name", "duration_days","user_email"].includes(key)) {
+                if (!["_id", "product_name", "starting_price", "description", "image_url", "category", "__v", "createdAt", "updatedAt", "user_name", "duration_days","user_email","notified"].includes(key)) {
                     const label = fieldLabels[key] || key;
                     dynamicFieldsHTML += `<p class="card-text">${label}: ${product[key]}</p>`;
                 }

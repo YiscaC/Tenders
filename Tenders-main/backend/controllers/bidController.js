@@ -99,9 +99,9 @@ exports.getWonAuctionsByUser = async (req, res) => {
 
     const won = [];
 
-    auctionIds.forEach(auctionId => {
+    for (const auctionId of auctionIds) {
       const bidsForAuction = bids.filter(b => b.auctionId.toString() === auctionId.toString());
-      if (bidsForAuction.length === 0) return;
+      if (bidsForAuction.length === 0) continue;
 
       const highestBid = bidsForAuction.reduce((max, b) => b.amount > max.amount ? b : max, bidsForAuction[0]);
       if (highestBid.userEmail === email) {
@@ -109,11 +109,13 @@ exports.getWonAuctionsByUser = async (req, res) => {
         if (auction) {
           won.push({
             ...auction,
-            amount: highestBid.amount // 💰 מוסיפים את סכום הזכייה
+            amount: highestBid.amount, // 💰 סכום הזכייה
+            publisherName: auction.user_name,   // 👤 שם המפרסם
+            publisherEmail: auction.user_email  // 📧 מייל המפרסם
           });
         }
       }
-    });
+    }
 
     res.json(won);
   } catch (error) {
@@ -121,7 +123,6 @@ exports.getWonAuctionsByUser = async (req, res) => {
     res.status(500).json({ error: "שגיאה בשליפת מכרזים שזכית בהם" });
   }
 };
-
 
 exports.checkEndedAuctionsNotifications = async (req, res) => {
   const { email } = req.params;
@@ -183,6 +184,30 @@ exports.getBidsByAuction = async (req, res) => {
     res.status(500).json({ message: 'שגיאה בשליפת הצעות' });
   }
 };
+
+exports.getHighestBidByAuction = async (req, res) => {
+  try {
+    const { auctionId } = req.params;
+    const bid = await Bid.findOne({ auctionId }).sort({ amount: -1 });
+
+    if (!bid) {
+      return res.status(404).json({ message: "לא נמצאה הצעה גבוהה." });
+    }
+
+    // שליפת שם המשתמש לפי האימייל
+    const user = await User.findOne({ email: bid.userEmail });
+
+    return res.json({
+      highestBid: bid.amount,
+      userName: user ? user.name : "משתמש לא מזוהה",
+      winnerEmail: bid.userEmail
+    });
+  } catch (err) {
+    console.error("שגיאה בקבלת ההצעה הגבוהה:", err);
+    res.status(500).json({ message: "שגיאה בשרת" });
+  }
+};
+
 
 
 

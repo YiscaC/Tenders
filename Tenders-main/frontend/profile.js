@@ -17,6 +17,7 @@ if (["my-auctions", "my-bids", "my-wins"].includes(sectionFromHash)) {
 
 
     document.getElementById("user-name").textContent = user.name;
+    document.getElementById("user-email").textContent = user.email;
 
     try {
         // 🔎 שליפת מכרזים שפרסם
@@ -47,73 +48,80 @@ if (["my-auctions", "my-bids", "my-wins"].includes(sectionFromHash)) {
 });
 
 function renderAuctions(auctions, containerPrefix) {
-    // ✅ טיפול במכרזים שזכית בהם
-    if (containerPrefix === "my-wins") {
-        const winsContainer = document.getElementById("my-wins");
-        winsContainer.innerHTML = "";
-    
-        if (!auctions.length) {
-            winsContainer.innerHTML = "<p>לא נמצאו מכרזים.</p>";
-            return;
-        }
-    
-        auctions.forEach(a => {
-            const div = document.createElement("div");
-            div.className = "auction-item";
-            div.innerHTML = `
-                <h4>${a.product_name}</h4>
-                <p>${a.description || ''}</p>
-                <p>הצעתך הזוכה: ${a.amount} ₪</p>
-            `;
-            winsContainer.appendChild(div);
-        });
-    
-        return; // חשוב! לא להמשיך לתחתית הפונקציה
-    }
-    
-    
+    const isWins = containerPrefix === "my-wins";
+    const isBids = containerPrefix === "my-bids";
 
-    // ✨ ברירת מחדל – עבור my-auctions / my-bids
+    const container = isWins ? document.getElementById("my-wins") : null;
     const activeContainer = document.getElementById(`${containerPrefix}-active`);
     const endedContainer = document.getElementById(`${containerPrefix}-ended`);
-    activeContainer.innerHTML = "";
-    endedContainer.innerHTML = "";
+    const activeTitle = document.getElementById(`${containerPrefix}-active-title`);
+    const endedTitle = document.getElementById(`${containerPrefix}-ended-title`);
+
+    if (isWins && container) container.innerHTML = "";
+    if (activeContainer) activeContainer.innerHTML = "";
+    if (endedContainer) endedContainer.innerHTML = "";
 
     if (!auctions.length) {
-        const activeTitle = document.getElementById(`${containerPrefix}-active-title`);
-        const endedTitle = document.getElementById(`${containerPrefix}-ended-title`);
-        const activeDiv = document.getElementById(`${containerPrefix}-active`);
-        const endedDiv = document.getElementById(`${containerPrefix}-ended`);
-    
-        if (activeTitle) activeTitle.style.display = "none";
-        if (endedTitle) endedTitle.style.display = "none";
-        if (endedDiv) endedDiv.style.display = "none";
-    
-        if (activeDiv) activeDiv.innerHTML = "<p>לא נמצאו מכרזים.</p>";
-        return;
+        if (isWins && container) {
+            container.innerHTML = "<p>לא נמצאו מכרזים.</p>";
+            return;
+        } else {
+            if (activeTitle) activeTitle.style.display = "none";
+            if (endedTitle) endedTitle.style.display = "none";
+            if (endedContainer) endedContainer.style.display = "none";
+            if (activeContainer) activeContainer.innerHTML = "<p>לא נמצאו מכרזים.</p>";
+            return;
+        }
     }
-    
-    auctions.forEach( async a => {
+
+    auctions.forEach(async a => {
         const endDate = new Date(a.createdAt);
         endDate.setDate(endDate.getDate() + a.duration_days);
         const now = new Date();
         const isActive = now < endDate;
 
         const div = document.createElement("div");
-        div.className = "auction-item";
+        div.className = "auction-item d-flex flex-column justify-content-between";
+        div.style.height = "100%";
 
-        if (containerPrefix === "my-bids") {
-            div.style.cursor = "pointer";
-            div.addEventListener("click", () => {
-                window.location.href = `product.html?id=${a._id}`;
-            });
-        }
-
-        div.innerHTML = `
+        const topContent = document.createElement("div");
+        topContent.innerHTML = `
             <h4>${a.product_name}</h4>
             <p>${a.description || ''}</p>
-            <p>${containerPrefix === "my-bids" ? `הצעה שלך: ${a.amount} ₪` : `מחיר התחלתי: ${a.starting_price} ₪`}</p>
-        `;
+            <p>${isBids ? `ההצעה האחרונה שלך: ${a.amount} ₪`: isWins? `הצעתך הזוכה: ${a.amount} ₪`: `מחיר התחלתי: ${a.starting_price} ₪`}</p> `;
+
+            div.appendChild(topContent);
+
+        const bottomContent = document.createElement("div");
+
+        if (isBids) {
+            const showBidsBtn = document.createElement("button");
+            showBidsBtn.className = "btn btn-sm btn-info";
+            showBidsBtn.textContent = "הצג הצעות";
+            showBidsBtn.onclick = () => toggleBidList(showBidsBtn);
+            const bidsList = document.createElement("div");
+            bidsList.className = "bid-list";
+            bidsList.style.display = "none";
+            bidsList.style.marginTop = "10px";
+
+            const bids = a.bids || [];
+            if (bids.length > 0) {
+                bidsList.innerHTML = bids.map(b => `
+                    <div class="bid-item">
+                        <div><strong>₪${b.amount}</strong></div>
+                        <div>🕒 ${new Date(b.createdAt).toLocaleString()}</div>
+                    </div>
+                `).join('');
+                bottomContent.appendChild(showBidsBtn);
+                bottomContent.appendChild(bidsList);
+            } else {
+                const noBids = document.createElement("p");
+                noBids.className = "text-muted mt-2 mb-0";
+                noBids.style.fontWeight = "bold";
+                noBids.textContent = "לא הוגשו הצעות מחיר";
+                bottomContent.appendChild(noBids);
+            }
+        }
 
         if (containerPrefix === "my-auctions") {
             const editBtn = document.createElement("button");
@@ -130,51 +138,123 @@ function renderAuctions(auctions, containerPrefix) {
             btnGroup.className = "button-group";
             btnGroup.appendChild(editBtn);
             btnGroup.appendChild(deleteBtn);
-            div.appendChild(btnGroup);
-            if (containerPrefix === "my-auctions") {
-                const bidsRes = await fetch(`http://localhost:3001/api/bids/by-auction/${a._id}`);
-                const bids = await bidsRes.json();
-            
-                if (bids.length > 0) {
-                    const bidsList = document.createElement("div");
-                    bidsList.className = "bid-list";
-                    bidsList.style.marginTop = "10px";
-                    
-                    bids.forEach(b => {
-                        const bidItem = document.createElement("div");
-                        bidItem.className = "bid-item";
-                        bidItem.innerHTML = `
-                            <div><strong>₪${b.amount}</strong></div>
-                            <div>🕒 ${new Date(b.createdAt).toLocaleString()}</div>
-                            <div>👤 ${b.userName}</div>
-                        `;
-                        bidsList.appendChild(bidItem);
-                    });                    
-            
-                    const showBidsBtn = document.createElement("button");
-                    showBidsBtn.className = "btn btn-sm btn-secondary mt-2";
-                    showBidsBtn.textContent = "הצג הצעות";
-                    showBidsBtn.onclick = () => {
-                        const visible = bidsList.style.display !== "none";
-                        bidsList.style.display = visible ? "none" : "block";
-                        showBidsBtn.textContent = visible ? "הצג הצעות" : "הסתר הצעות";
-                    };
-            
-                    div.appendChild(showBidsBtn);
-                    div.appendChild(bidsList);
-                    bidsList.style.display = "none"; // ברירת מחדל מוסתר
-                }
+            bottomContent.appendChild(btnGroup);
+
+            const bidsRes = await fetch(`http://localhost:3001/api/bids/by-auction/${a._id}`);
+            const bids = await bidsRes.json();
+
+            if (bids.length > 0) {
+                const bidsList = document.createElement("div");
+                bidsList.className = "bid-list";
+                bidsList.style.marginTop = "10px";
+                bidsList.style.display = "none";
+
+                bids.forEach(b => {
+                    const bidItem = document.createElement("div");
+                    bidItem.className = "bid-item";
+                    bidItem.innerHTML = `
+                        <div><strong>₪${b.amount}</strong></div>
+                        <div>🕒 ${new Date(b.createdAt).toLocaleString()}</div>
+                        <div>👤 ${b.userName}</div>
+                    `;
+                    bidsList.appendChild(bidItem);
+                });
+
+                const showBidsBtn = document.createElement("button");
+                showBidsBtn.className = "btn btn-sm btn-dark mt-2";
+                showBidsBtn.style.fontWeight = "bold";
+                showBidsBtn.textContent = "הצג הצעות";
+                showBidsBtn.onclick = () => {
+                    const visible = bidsList.style.display !== "none";
+                    bidsList.style.display = visible ? "none" : "block";
+                    showBidsBtn.textContent = visible ? "הצג הצעות" : "הסתר הצעות";
+                };
+
+                bottomContent.appendChild(showBidsBtn);
+                bottomContent.appendChild(bidsList);
+            } else {
+                const noBidsNote = document.createElement("p");
+                noBidsNote.className = "text-muted mt-2 mb-0";
+                noBidsNote.style.fontWeight = "bold";
+                noBidsNote.textContent = "לא הוגשו הצעות מחיר";
+                bottomContent.appendChild(noBidsNote);
             }
-            
         }
 
-        if (isActive) {
+        if (!isActive && containerPrefix === "my-auctions") {
+            try {
+                const res = await fetch(`http://localhost:3001/api/bids/highest/${a._id}`);
+                const winnerData = await res.json();
+
+                if (winnerData && winnerData.winnerEmail && winnerData.userName) {
+                    const showWinnerBtn = document.createElement("button");
+                    showWinnerBtn.className = "btn btn-sm btn-dark mt-2";
+                    showWinnerBtn.style.fontWeight = "bold";
+                    showWinnerBtn.textContent = "הצג פרטי זוכה";
+
+                    const winnerInfo = document.createElement("div");
+                    winnerInfo.className = "winner-info mt-1 p-2 bg-light border border-success rounded";
+                    winnerInfo.style.display = "none";
+                    winnerInfo.innerHTML = `
+                        <strong>🧑 פרטי זוכה:</strong><br>
+                        👤 ${winnerData.userName}<br>
+                        ✉️ מייל ליצירת קשר: ${winnerData.winnerEmail}
+                    `;
+
+                    showWinnerBtn.onclick = () => {
+                        const isVisible = winnerInfo.style.display !== "none";
+                        winnerInfo.style.display = isVisible ? "none" : "block";
+                        showWinnerBtn.textContent = isVisible ? "הצג פרטי זוכה" : "הסתר פרטי זוכה";
+                    };
+
+                    bottomContent.appendChild(showWinnerBtn);
+                    bottomContent.appendChild(winnerInfo);
+                }
+            } catch (err) {
+                console.error("שגיאה בקבלת פרטי הזוכה:", err);
+            }
+        }
+
+        div.appendChild(bottomContent);
+
+        if (isWins) {
+            // הצגת כפתור להצגת פרטי מפרסם
+            const showOwnerBtn = document.createElement("button");
+            showOwnerBtn.className = "btn btn-sm btn-dark mt-2";
+            showOwnerBtn.style.fontWeight = "bold";
+            showOwnerBtn.textContent = "הצג פרטי המפרסם";
+        
+            const ownerInfo = document.createElement("div");
+            ownerInfo.className = "owner-info mt-1 p-2 bg-light border border-primary rounded";
+            ownerInfo.style.display = "none";
+            ownerInfo.innerHTML = `
+                <strong>📦 פרטי המפרסם:</strong><br>
+                👤 ${a.publisherName || "לא ידוע"}<br>
+                ✉️ ${a.publisherEmail || "לא ידוע"}
+            `;
+        
+            showOwnerBtn.onclick = () => {
+                const isVisible = ownerInfo.style.display !== "none";
+                ownerInfo.style.display = isVisible ? "none" : "block";
+                showOwnerBtn.textContent = isVisible ? "הצג פרטי המפרסם" : "הסתר פרטי המפרסם";
+            };
+        
+            bottomContent.appendChild(showOwnerBtn);
+            bottomContent.appendChild(ownerInfo);
+        
+            container.appendChild(div); // רק פעם אחת!
+        } else if (isActive) {
             activeContainer.appendChild(div);
         } else {
             endedContainer.appendChild(div);
         }
+
     });
 }
+
+
+
+
 
 
 
@@ -288,25 +368,22 @@ function editAuction(auction) {
 }
 
 function renderGroupedBids(groupedBids) {
-    const containerPrefix = "my-bids"; 
+    const containerPrefix = "my-bids";
     const activeContainer = document.getElementById(`${containerPrefix}-active`);
     const endedContainer = document.getElementById(`${containerPrefix}-ended`);
     const activeTitle = document.getElementById(`${containerPrefix}-active-title`);
     const endedTitle = document.getElementById(`${containerPrefix}-ended-title`);
-    
+
     activeContainer.innerHTML = "";
     endedContainer.innerHTML = "";
 
     if (!groupedBids.length) {
-        // הסתרת כותרות
         if (activeTitle) activeTitle.style.display = "none";
         if (endedTitle) endedTitle.style.display = "none";
         if (endedContainer) endedContainer.style.display = "none";
-
         if (activeContainer) activeContainer.innerHTML = "<p>לא נמצאו מכרזים.</p>";
         return;
     }
-
 
     const now = new Date();
 
@@ -319,21 +396,55 @@ function renderGroupedBids(groupedBids) {
         const isActive = now < endDate;
 
         const div = document.createElement("div");
-        div.className = "auction-item";
+        div.className = "auction-item d-flex flex-column justify-content-between";
+        div.style.height = "100%";
 
-        div.innerHTML = `
+        const userBid = bids.sort((a, b) => b.amount - a.amount)[0];
+
+        
+        const topContent = document.createElement("div");
+        topContent.innerHTML = `
             <h4>${auction.product_name}</h4>
             <p>${auction.description || ''}</p>
-            <button class="btn btn-sm btn-info" onclick='toggleBidList(this)'>הצג הצעות</button>
-            <div class="bid-list" style="display:none; margin-top: 10px;">
-                ${bids.map(b => `
-                    <div class="bid-item">
-                        <div><strong>₪${b.amount}</strong></div>
-                        <div>🕒 ${new Date(b.createdAt).toLocaleString()}</div>
-                    </div>
-                `).join('')}
-            </div>
+            <p>ההצעה האחרונה שלך: ${userBid ? userBid.amount + ' ₪' : 'לא נמצאה'}</p>
         `;
+        
+        div.appendChild(topContent);
+
+
+        const bottomContent = document.createElement("div");
+
+        const showBidsBtn = document.createElement("button");
+        showBidsBtn.className = "btn btn-sm btn-dark mt-2";
+        showBidsBtn.style.fontWeight = "bold";
+        showBidsBtn.textContent = "הצג הצעות";
+        showBidsBtn.onclick = () => toggleBidList(showBidsBtn);
+
+
+
+        const bidsList = document.createElement("div");
+        bidsList.className = "bid-list";
+        bidsList.style.display = "none";
+        bidsList.style.marginTop = "10px";
+
+        if (bids.length > 0) {
+            bidsList.innerHTML = bids.map(b => `
+                <div class="bid-item">
+                    <div><strong>₪${b.amount}</strong></div>
+                    <div>🕒 ${new Date(b.createdAt).toLocaleString()}</div>
+                </div>
+            `).join('');
+            bottomContent.appendChild(showBidsBtn);
+            bottomContent.appendChild(bidsList);
+        } else {
+            const noBids = document.createElement("p");
+            noBids.className = "text-muted mt-2 mb-0";
+            noBids.style.fontWeight = "bold";
+            noBids.textContent = "לא הוגשו הצעות מחיר";
+            bottomContent.appendChild(noBids);
+        }
+
+        div.appendChild(bottomContent);
 
         if (isActive) {
             activeContainer.appendChild(div);
@@ -342,6 +453,7 @@ function renderGroupedBids(groupedBids) {
         }
     });
 }
+
 
 function toggleBidList(button) {
     const ul = button.nextElementSibling;

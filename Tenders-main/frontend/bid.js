@@ -94,6 +94,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
         alert('ההצעה נשמרה בהצלחה!');
         form.reset();
+        window.location.href = "home.html";
       }
     })
     .catch(err => {

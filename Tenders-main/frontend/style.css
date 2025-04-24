@@ -70,11 +70,6 @@
   border-bottom: none;
   background: none;
 }
-
-/* כהות במעבר עכבר */
-.my-button:hover {
-  background-color: #e2e6ea;
-}
 .card-header {
   border-bottom: none !important;
 
