@@ -63,7 +63,7 @@ const now = new Date();
 if (now < endDate) {
     const button = document.createElement("a");
     button.href = `bid.html?id=${product._id}&name=${encodeURIComponent(product.product_name)}&price=${product.starting_price}&image=${encodeURIComponent(product.image_url)}`;
-    button.className = "btn bg-golden my-button2 col-6 mt-3";
+    button.className = "btn bg-golden my-button2 col-6 mt-3 mb-3";
     button.textContent = "הגש הצעת מחיר";
 
     // הוספה ל-div המכיל

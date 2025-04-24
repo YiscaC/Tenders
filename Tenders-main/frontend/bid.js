@@ -31,9 +31,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error("שגיאה בשליפת ההצעה הגבוהה ביותר:", err);
     highestBidEl.textContent = "שגיאה בטעינת ההצעה הגבוהה ביותר.";
   }
-
+  const submitBtn = document.getElementById('submitBtn');
+  const bidAmountInput = document.getElementById('bidAmount');
+  const cardNumberInput = form.querySelector('input[placeholder="מספר כרטיס"]');
+  const expiryInput = form.querySelector('input[placeholder="תוקף (MM/YY)"]');
+  const cvvInput = form.querySelector('input[placeholder="CVV"]');
+  const termsCheckbox = document.getElementById('terms-1');
+  
+  // פונקציה לבדוק אם כל השדות מולאו והcheckbox מסומן
+  function checkFormValidity() {
+    const bidAmountValid = bidAmountInput.value.trim() !== '';
+    const cardValid = /^\d{16}$/.test(cardNumberInput.value.trim());
+    const expiryValid = /^(0[1-9]|1[0-2])\/\d{2}$/.test(expiryInput.value.trim());
+    const cvvValid = /^\d{3}$/.test(cvvInput.value.trim());
+    const checkboxChecked = termsCheckbox.checked;
+  
+    submitBtn.disabled = !(bidAmountValid && cardValid && expiryValid && cvvValid && checkboxChecked);
+  }
+  
+  // מעקב על שדות הקלט
+  [bidAmountInput, cardNumberInput, expiryInput, cvvInput, termsCheckbox].forEach(el => {
+    el.addEventListener('input', checkFormValidity);
+    el.addEventListener('change', checkFormValidity);
+  });
+  
+  // בדיקה ראשונית
+  checkFormValidity();
+  
   // 🧾 שליחת טופס
   form.addEventListener('submit', function (e) {
+    
     e.preventDefault();
     errorMsg.textContent = '';
 

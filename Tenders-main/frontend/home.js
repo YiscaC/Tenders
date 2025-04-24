@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         console.error("שגיאה בהבאת ההצעה הגבוהה:", err);
                         const highestBidElement = document.getElementById(`highest-bid-${auction._id}`);
                         if (highestBidElement) {
-                            highestBidElement.textContent = "שגיאה בהבאת ההצעה";
+                            highestBidElement.textContent = "לא הוגשו הצעות מחיר למכרז זה";
                         }
                     });
             });
