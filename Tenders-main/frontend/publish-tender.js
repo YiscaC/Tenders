@@ -160,6 +160,16 @@ document.addEventListener("DOMContentLoaded", function () {
         openPaymentButton.style.display = "none"; // מסתיר את כפתור התשלום
     });
 
+        // בדיקה על תוקף כרטיס
+        function isValidExpiry(expiry) {
+            const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+            if (!expiryRegex.test(expiry)) return false;
+            const [expMonth, expYear] = expiry.split('/').map(Number);
+            const now = new Date();
+            const expiryDate = new Date(2000 + expYear, expMonth);
+            return expiryDate >= now;
+        }
+
     // פונקציה לבדוק אם כל השדות מלאים
     function checkPaymentFields() {
         // קבלת ערכי השדות
@@ -170,18 +180,23 @@ document.addEventListener("DOMContentLoaded", function () {
     const productImage = document.getElementById("productImage").files.length > 0; // לבדוק אם הועלתה תמונה
     const checkbox1 = document.getElementById("terms-1").checked;
     const checkbox2 = document.getElementById("terms-2").checked;
+
+    const cardValid = /^\d{16}$/.test(cardNumber.value.trim());
+    const expiryValid = isValidExpiry(cardExpiry.value.trim());
+    const cvvValid = /^\d{3}$/.test(cardCVV.value.trim());
+    const holderValid = cardHolder.value.trim() !== "";
     
           // בדיקת האם כל הפרטים מלאים
     if (
-        cardNumber.value.length === 16 &&
-        cardExpiry.value.length === 5 &&
-        cardCVV.value.length === 3 &&
-        cardHolder.value.trim() !== "" &&
+        cardValid &&
+        expiryValid &&
+        cvvValid &&
+        holderValid &&
         productName !== "" &&
         productDescription !== "" &&
         startingPrice !== "" &&
         auctionDuration !== "" &&
-        productImage&&
+        productImage &&
         checkbox1 &&
         checkbox2
     ) {

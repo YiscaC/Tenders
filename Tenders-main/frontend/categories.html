@@ -56,41 +56,128 @@
     
     <div class="container category-container">
         <h2 class="mb-4">בחר קטגוריה למכרז</h2>
+
+        <div class="mb-4 d-flex justify-content-center position-relative">
+            <div class="search-wrapper">
+              <input
+                type="text"
+                id="category-search"
+                class="form-control custom-search-input"
+                placeholder="חפש קטגוריה..."
+                oninput="filterCategories()"
+              />
+              <i class="bi bi-search search-icon"></i>
+            </div>
+          </div>
+          
+                   
         <div class="row g-3">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="category-box" onclick="goToAuction('jewelry')">
-                    <img src="image/jewelry.png" alt="תכשיטים">
+                    <img src="image/wedding-rings.png" alt="תכשיטים">
                     <h5>תכשיטים</h5>
                 </div>
             </div>
-            <div class="col-md-4">
+            <!--
+            <div class="col-md-3">
                 <div class="category-box" onclick="goToAuction('electronics')">
-                    <img src="image/gadget.png" alt="מחשבים וסלולר">
+                    <img src="image/gadget.png" alt= "אלקטרוניקה">
                     <h5>אלקטרוניקה</h5>
+                </div> 
+            </div> -->
+            <div class="col-md-3">
+                <div class="category-box" onclick="goToAuction('CellPhone')">
+                    <img src="image/menu.png" alt="מכשירים סלולריים">
+                    <h5>מכשירים סלולריים</h5>
                 </div>
             </div>
-
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <div class="category-box" onclick="goToAuction('sports_and_leisure')">
+                    <img src="image/sports.png" alt="ספורט ופנאי">
+                    <h5>ספורט ופנאי</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-box" onclick="goToAuction('clothing')">
+                    <img src="image/discount.png" alt="ביגוד">
+                    <h5>ביגוד</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-box" onclick="goToAuction('cosmetics')">
+                    <img src="image/cosmetic.png" alt="Cosmetics and Accessories">
+                    <h5>קוסמטיקה ואקססוריז</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-box" onclick="goToAuction('babies')">
+                    <img src="image/milk-bottle.png" alt="מוצרי תינוקות">
+                    <h5>מוצרי תינוקות</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-box" onclick="goToAuction('musical_instruments')">
+                    <img src="image/guitar.png" alt="כלי נגינה">
+                    <h5>כלי נגינה</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-box" onclick="goToAuction('toHome')">
+                    <img src="image/house.png" alt="לבית">
+                    <h5>לבית</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-box" onclick="goToAuction('garden')">
+                    <img src="image/grill (2).png" alt="גינון וחוץ">
+                    <h5>גינון וחוץ</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-box" onclick="goToAuction('art')">
+                    <img src="image/color-palette.png" alt="אומנות">
+                    <h5>אומנות</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-box" onclick="goToAuction('books')">
+                    <img src="image/books.png" alt="ספרים ומדיה">
+                    <h5>ספרים ומדיה</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-box" onclick="goToAuction('office')">
+                    <img src="image/workspace.png" alt="משרד">
+                    <h5>משרד</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-box" onclick="goToAuction('games')">
+                    <img src="image/rocking-horse.png" alt="משחקים וצעצועים">
+                    <h5>משחקים וצעצועים</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
                 <div class="category-box" onclick="goToAuction('Electrical_appliances')">
-                    <img src="image/electric-appliance.png" alt="מכשירי חשמל">
+                    <img src="image/appliances.png" alt="מכשירי חשמל">
                     <h5>מכשירי חשמל</h5>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="category-box" onclick="goToAuction('animals')">
-                    <img src="image/koala.png" alt="בעלי חיים">
+                    <img src="image/mouse.png" alt="בעלי חיים">
                     <h5>בעלי חיים</h5>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="category-box" onclick="goToAuction('furniture')">
-                    <img src="image/couch.png" alt="רהיטים">
+                    <img src="image/furniture.png" alt="רהיטים">
                     <h5>רהיטים</h5>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="category-box" onclick="goToAuction('car')">
-                    <img src="image/car.png" alt="רכבים">
+                    <img src="image/sedan.png" alt="רכבים">
                     <h5>רכבים</h5>
                 </div>
             </div>
@@ -101,6 +188,15 @@
         function goToAuction(category) {
             window.location.href = 'publish-tender.html?category=' + category;
         }
+        function filterCategories() {
+            const searchTerm = document.getElementById("category-search").value.trim().toLowerCase();
+            const categoryBoxes = document.querySelectorAll(".category-box");
+          
+            categoryBoxes.forEach(box => {
+              const title = box.querySelector("h5").textContent.toLowerCase();
+              box.parentElement.style.display = title.includes(searchTerm) ? "block" : "none";
+            });
+          }          
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"

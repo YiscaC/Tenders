@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error("שגיאה בשליפת ההצעה הגבוהה ביותר:", err);
     highestBidEl.textContent = "שגיאה בטעינת ההצעה הגבוהה ביותר.";
   }
+  
   const submitBtn = document.getElementById('submitBtn');
   const bidAmountInput = document.getElementById('bidAmount');
   const cardNumberInput = form.querySelector('input[placeholder="מספר כרטיס"]');

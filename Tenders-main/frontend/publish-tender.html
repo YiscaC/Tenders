@@ -57,7 +57,12 @@
     </nav>
     
     <div class="container auction-container">
+
+        <div id="category-icon" class="mb-3 text-center">
+            <img id="category-img" src="" alt="אייקון קטגוריה" style="max-width: 80px;" />
+        </div>
         <h2 id="category-title" class="mb-4"></h2>
+           
         <form id="auction-form">
               <!-- שם המוצר -->
               <div class="mb-3">
@@ -123,16 +128,19 @@
     <h4>💳 פרטי תשלום</h4>
 
     <label for="card-number" class="form-label">מספר כרטיס אשראי</label>
-    <input type="text" class="form-control" id="card-number" placeholder="1234 5678 9012 3456" required>
-
+    <input type="text" class="form-control" id="card-number" placeholder="1234 5678 9012 3456" >
+    <div id="error-card" class="error-text"></div>
+    
     <label for="card-expiry" class="form-label">תוקף</label>
-    <input type="text" class="form-control" id="card-expiry" placeholder="MM/YY" required>
-
+    <input type="text" class="form-control" id="card-expiry" placeholder="MM/YY" >
+    <div id="error-expiry" class="error-text"></div>
+    
     <label for="card-cvv" class="form-label">CVV</label>
-    <input type="text" class="form-control" id="card-cvv" placeholder="123" required>
+    <input type="text" class="form-control" id="card-cvv" placeholder="123" >
+    <div id="error-cvv" class="error-text"></div>    
 
     <label for="card-holder" class="form-label">שם בעל הכרטיס</label>
-    <input type="text" class="form-control" id="card-holder" placeholder="ישראל ישראלי" required>
+    <input type="text" class="form-control" id="card-holder" placeholder="ישראל ישראלי" >
 
     <!-- כפתור אישור תשלום -->
     <div class="text-center mt-3">
@@ -162,11 +170,54 @@
                 Electrical_appliances: "מכשירי חשמל",
                 car: "רכבים",
                 furniture: "רהיטים",
-                animals: "בעלי חיים"
+                animals: "בעלי חיים",
+              
+                CellPhone: "מכשירים סלולריים",
+                sports_and_leisure: "ספורט ופנאי",
+                clothing: "ביגוד",
+                cosmetics: "קוסמטיקה ואקססוריז",
+                babies: "מוצרי תינוקות",
+                musical_instruments: "כלי נגינה",
+                toHome: "לבית",
+                garden: "גינון וחוץ",
+                art: "אומנות",
+                books: "ספרים ומדיה",
+                office: "משרד",
+                games: "משחקים וצעצועים"
+                
             };
-
+            const categoryIcons = {
+                jewelry: "image/wedding-rings.png",
+                electronics: "image/gadget.png",
+                Electrical_appliances: "image/appliances.png",
+                car: "image/sedan.png",
+                furniture: "image/furniture.png",
+                animals: "image/mouse.png",
+                CellPhone: "image/menu.png",
+                sports_and_leisure: "image/sports.png",
+                clothing: "image/discount.png",
+                cosmetics: "image/cosmetic.png",
+                babies: "image/milk-bottle.png",
+                musical_instruments: "image/guitar.png",
+                toHome: "image/house.png",
+                garden: "image/grill (2).png",
+                art: "image/color-palette.png",
+                books: "image/books.png",
+                office: "image/workspace.png",
+                games: "image/rocking-horse.png"
+              };
+              
             // שינוי הכותרת בהתאם לקטגוריה
             document.getElementById("category-title").textContent = "פרסום מכרז - " + (categoryTitle[category] || "קטגוריה לא ידועה");
+          
+            // הצגת האייקון של הקטגוריה
+            const iconImg = document.getElementById("category-img");
+            if (categoryIcons[category]) {
+                iconImg.src = categoryIcons[category];
+                iconImg.style.display = "inline-block";
+            } else {
+                iconImg.style.display = "none";
+            }
 
             // יצירת שאלות דינמיות לפי קטגוריה
             const dynamicQuestions = {
@@ -174,6 +225,7 @@
                 { label: "חומר", id: "material", type: "text" },
                 { label: "משקל (גרם)", id: "weight", type: "number" }
               ],
+
                furniture: [
               { label: "חומר", id: "material", type: "text" },
               { label: "מידות", id: "dimensions", type: "text" }
@@ -192,7 +244,66 @@
             ],
              Electrical_appliances: [
              { label: "מידות", id: "dimensions", type: "text" }
-            ]
+            ],
+            CellPhone: [
+            { label: "דגם", id: "model", type: "text" },
+            { label: "מצב", id: "condition", type: "text" }
+          ],
+        
+          sports_and_leisure: [
+            { label: "סוג ציוד", id: "equipment_type", type: "text" },
+            { label: "מותג", id: "brand", type: "text" }
+          ],
+        
+          clothing: [
+            { label: "מידה", id: "size", type: "text" },
+            { label: "סוג בד", id: "fabric_type", type: "text" }
+          ],
+        
+          cosmetics: [
+            { label: "סוג מוצר", id: "product_type", type: "text" },
+            { label: "מותג", id: "brand", type: "text" }
+          ],
+        
+          babies: [
+            { label: "גיל יעד", id: "age_range", type: "text" },
+            { label: "סוג מוצר", id: "product_type", type: "text" }
+          ],
+        
+          musical_instruments: [
+            { label: "סוג כלי", id: "instrument_type", type: "text" },
+            { label: "מצב", id: "condition", type: "text" }
+          ],
+        
+          toHome: [
+            { label: "סוג פריט", id: "item_type", type: "text" },
+            { label: "חומר", id: "material", type: "text" }
+          ],
+        
+          garden: [
+            { label: "שימוש", id: "usage", type: "text" },
+            { label: "מידות", id: "dimensions", type: "text" }
+          ],
+        
+          art: [
+            { label: "טכניקה", id: "technique", type: "text" },
+            { label: "שנה", id: "year", type: "number" }
+          ],
+        
+          books: [
+            { label: "שם המחבר", id: "author", type: "text" },
+            { label: "שנה", id: "year", type: "number" }
+          ],
+        
+          office: [
+            { label: "סוג ציוד", id: "equipment_type", type: "text" },
+            { label: "מותג", id: "brand", type: "text" }
+          ],
+        
+          games: [
+            { label: "גיל יעד", id: "age_range", type: "text" },
+            { label: "מספר שחקנים", id: "players", type: "number" }
+          ]
             };
 
             // הוספת השאלות הדינמיות לטופס

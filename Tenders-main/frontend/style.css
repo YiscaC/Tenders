@@ -134,6 +134,12 @@
 .form-button:hover {
   background-color: #e2e6ea;
 }
+.listProduct {
+  direction: rtl;
+  text-align: right;
+}
+
+
 
 
 

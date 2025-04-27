@@ -40,3 +40,45 @@ body {
 .navbar .navbar-brand img {
     margin-left: auto !important; /* דוחף את הלוגו שמאלה */
 }
+#category-search {
+    max-width: 400px;
+    margin: 0 auto;
+    font-size: 1rem;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+/* עיגול פינות תואם בין האייקון לשדה החיפוש */
+.input-group-text {
+    border-radius: 0 8px 8px 0;
+    border-left: none;
+  }
+  
+  .form-control {
+    border-radius: 8px 0 0 8px;
+    border-right: none;
+  }
+  .search-wrapper {
+    position: relative;
+    max-width: 400px;
+    width: 100%;
+  }
+  
+  .custom-search-input {
+    padding-right: 7px; /* ⬅️ מוסיף עוד ריווח כדי להרחיק את הטקסט מהאייקון */
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    text-align: right;
+  }
+  
+  .search-icon {
+    position: absolute;
+    right: 370px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 1.2rem;
+    pointer-events: none;
+  }
+  

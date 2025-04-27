@@ -29,3 +29,9 @@
 #auction-form {
     padding-bottom: 30px; /* יוצר שוליים בתחתית */
 }
+.error-text {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+  }
+  

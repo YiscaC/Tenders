@@ -25,8 +25,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 kilometers: "קילומטראז'",
                 dimensions: "מידות",
                 breed: "גזע",
-                age: "גיל (בשנים)"
-            };
+                age: "גיל (בשנים)",
+                model: "דגם",
+                equipment_type: "סוג ציוד",
+                brand: "מותג",
+                gender: "מין",
+                size: "מידה",
+                product_type: "סוג מוצר",
+                age_range: "גיל יעד",
+                instrument_type: "סוג כלי",
+                usage: "שימוש",
+                technique: "טכניקה",
+                year: "שנה",
+                author: "מחבר",
+                item_type: "סוג פריט",
+                players: "מספר שחקנים"
+              };
+              
 
             let dynamicFieldsHTML = '';
             for (const key in product) {
@@ -60,15 +75,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // אחרי שהכנסת את התוכן ל-selectItem
 const now = new Date();
+const user = JSON.parse(localStorage.getItem("user"));
+
 if (now < endDate) {
     const button = document.createElement("a");
-    button.href = `bid.html?id=${product._id}&name=${encodeURIComponent(product.product_name)}&price=${product.starting_price}&image=${encodeURIComponent(product.image_url)}`;
     button.className = "btn bg-golden my-button2 col-6 mt-3 mb-3";
     button.textContent = "הגש הצעת מחיר";
-
-    // הוספה ל-div המכיל
+    
+    button.addEventListener("click", function (e) {
+        if (user && user.email === product.user_email) {
+            e.preventDefault(); // ביטול מעבר לעמוד
+            Swal.fire({
+                icon: "warning",
+                title: "שימו לב!",
+                text: "אינך יכול להגיש הצעת מחיר למכרז שפרסמת בעצמך.",
+                confirmButtonText: "הבנתי"
+            });
+        } else {
+            window.location.href = `bid.html?id=${product._id}&name=${encodeURIComponent(product.product_name)}&price=${product.starting_price}&image=${encodeURIComponent(product.image_url)}`;
+        }
+    });
+    
     document.querySelector(".order-md-1").appendChild(button);
+    
 }
+
 
 // הבאת ההצעה הגבוהה ביותר
 fetch(`http://localhost:3001/api/bids/highest/${productId}`)

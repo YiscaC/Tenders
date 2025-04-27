@@ -4,43 +4,33 @@ document.addEventListener('DOMContentLoaded', function () {
     fetch('http://localhost:3001/api/auctions')
         .then(response => response.json())
         .then(data => {
-            data.forEach(auction => {
- // חישוב תאריך סיום המכרז כדי שיוצגו רק המכרזים הפעילים בעמוד הראשי
-          const createdAt = new Date(auction.createdAt);
-          const endDate = new Date(createdAt);
-          endDate.setDate(endDate.getDate() + auction.duration_days);
+            listProductHTML.classList.add("row", "g-3", "justify-content-start"); // ✅ סידור לימין
 
-          const now = new Date();
-          if (now >= endDate) {
-               console.log(`⛔ מכרז ${auction.product_name} הסתיים – מדולג`);
-              return; // מדלג על מכרזים שהסתיימו
-           }
-           //הצגת המכרזים הפעילים
+            data.forEach(auction => {
+                const createdAt = new Date(auction.createdAt);
+                const endDate = new Date(createdAt);
+                endDate.setDate(endDate.getDate() + auction.duration_days);
+                const now = new Date();
+                if (now >= endDate) return;
+
                 const newAuction = document.createElement('div');
                 const classes = ['product', 'col-sm-6', 'col-md-4', 'col-lg-3', 'mb-4'];
                 classes.push(auction.category.trim());
-                console.log("🧩 קטגוריה שנוספה למוצר:", auction.category.trim());
-                console.log("📦 כל הקלאסים של המוצר:", classes);
-
                 newAuction.classList.add(...classes);
 
-                // שלב ביניים: קודם ניצור את התבנית הבסיסית, נוסיף את ההצעה הגבוהה אחרי fetch
                 newAuction.innerHTML = `
-                    <div class="d-flex justify-content-center align-items-center">
-                        <div class="card" id="auctionCard">
-                            <a href="product.html?id=${auction._id}&name=${encodeURIComponent(auction.product_name)}&price=${auction.starting_price}&image=${auction.image_url}&description=${encodeURIComponent(auction.description)}" class="text-dark my-button">
-                                <img src="${auction.image_url}" class="card-img-top" alt="${auction.product_name}">
-                            </a>
-                            <div class="card-footer bg-light">
-                                <div class="card-body text-center">
-                                    <h6 class="card-title">
-                                        <a href="product.html?id=${auction._id}&name=${encodeURIComponent(auction.product_name)}&price=${auction.starting_price}&image=${auction.image_url}&description=${encodeURIComponent(auction.description)}" class="text-dark my-button">
-                                            ${auction.product_name}
-                                        </a>
-                                    </h6>
-                                    
-                                    <p class="card-text text-secondary" id="highest-bid-${auction._id}">טוען הצעה גבוהה...</p>
-                                </div>  
+                    <div class="card h-100 text-end">
+                        <a href="product.html?id=${auction._id}&name=${encodeURIComponent(auction.product_name)}&price=${auction.starting_price}&image=${auction.image_url}&description=${encodeURIComponent(auction.description)}" class="text-dark my-button">
+                            <img src="${auction.image_url}" class="card-img-top fixed-product-image" alt="${auction.product_name}">
+                        </a>
+                        <div class="card-footer bg-light">
+                            <div class="card-body text-end">
+                                <h6 class="card-title">
+                                    <a href="product.html?id=${auction._id}&name=${encodeURIComponent(auction.product_name)}&price=${auction.starting_price}&image=${auction.image_url}&description=${encodeURIComponent(auction.description)}" class="text-dark my-button">
+                                        ${auction.product_name}
+                                    </a>
+                                </h6>
+                                <p class="card-text text-secondary" id="highest-bid-${auction._id}">טוען הצעה גבוהה...</p>
                             </div>
                         </div>
                     </div>
@@ -48,28 +38,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 listProductHTML.appendChild(newAuction);
 
-                // 🔄 עכשיו נביא את ההצעה הגבוהה ביותר למכרז הזה
                 fetch(`http://localhost:3001/api/bids/highest/${auction._id}`)
-  .then(res => {
-    console.log("🔄 תגובה ראשונית מהשרת:", res);
-    if (!res.ok) {
-        throw new Error(`שרת החזיר שגיאה: ${res.status} ${res.statusText}`);
-      }
-    return res.json();
-  })
-  .then(bidData => {
-    console.log("📦 הנתונים שהתקבלו מהשרת:", bidData);
-                   
-    const highestText = (bidData.highestBid !== null && bidData.highestBid !== undefined)
-    ? `₪${bidData.highestBid}`
-    : "עדיין לא הוגשה";
+                    .then(res => res.json())
+                    .then(bidData => {
+                        const highestText = (bidData.highestBid !== null && bidData.highestBid !== undefined)
+                            ? `₪${bidData.highestBid}`
+                            : "עדיין לא הוגשה";
                         const highestBidElement = document.getElementById(`highest-bid-${auction._id}`);
                         if (highestBidElement) {
                             highestBidElement.textContent = `ההצעה הגבוהה ביותר: ${highestText}`;
                         }
                     })
                     .catch(err => {
-                        console.error("שגיאה בהבאת ההצעה הגבוהה:", err);
                         const highestBidElement = document.getElementById(`highest-bid-${auction._id}`);
                         if (highestBidElement) {
                             highestBidElement.textContent = "לא הוגשו הצעות מחיר למכרז זה";
@@ -80,7 +60,21 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => {
             console.error('Error fetching auctions:', error);
         });
+
+    // ✅ חיפוש
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.addEventListener("input", function () {
+            const query = this.value.toLowerCase();
+            const cards = document.querySelectorAll(".product");
+            cards.forEach(card => {
+                const title = card.querySelector(".card-title").textContent.toLowerCase();
+                card.style.display = title.includes(query) ? "block" : "none";
+            });
+        });
+    }
 });
+
 
 // סינון מכרזים לפי קטגוריה בתפריט הניווט
 $(document).ready(function () {

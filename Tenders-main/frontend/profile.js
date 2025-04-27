@@ -280,86 +280,184 @@ function showSection(section) {
 
     }
 
-    async function logout() {
-        const user = JSON.parse(localStorage.getItem("user"));
-      
-        // שלב ראשון – אישור ראשוני
-        const firstConfirm = await Swal.fire({
+// 📌 שדרוג הפונקציית logout לבדיקת מכרזים פעילים עם הצעות מחיר לפני מחיקת משתמש
+async function logout() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.email) return;
+  
+    try {
+      // שליפת כל המכרזים של המשתמש
+      const auctionsRes = await fetch(`http://localhost:3001/api/auctions/user/email/${encodeURIComponent(user.email)}`);
+      const auctions = await auctionsRes.json();
+  
+      // סינון מכרזים פעילים בלבד
+      const now = new Date();
+      const activeAuctions = auctions.filter(a => {
+        const endDate = new Date(a.createdAt);
+        endDate.setDate(endDate.getDate() + a.duration_days);
+        return now < endDate;
+      });
+  
+      // בדיקת כמה מהמכרזים הפעילים קיבלו הצעות
+      let penaltyCount = 0;
+      for (const auction of activeAuctions) {
+        const bidsRes = await fetch(`http://localhost:3001/api/bids/by-auction/${auction._id}`);
+        const bids = await bidsRes.json();
+        if (bids.length > 0) penaltyCount++;
+      }
+  
+      // אם יש מכרזים פעילים עם הצעות – הצגת אזהרה
+      if (penaltyCount > 0) {
+        const penaltyAmount = penaltyCount * 30;
+        const warning = await Swal.fire({
           icon: 'warning',
-          title: 'האם את בטוחה שברצונך למחוק את המשתמש לצמיתות?',
-          text: 'לא תהיה אפשרות לשחזר את המשתמש או את המידע לאחר המחיקה.',
+          title: 'לא ניתן למחוק את המשתמש מיידית',
+          html: `יש לך <strong>${penaltyCount}</strong> מכרזים פעילים שכבר הוגשו אליהם הצעות.<br>מחיקה תדרוש תשלום קנס של <strong>${penaltyAmount} ש"ח </strong>(30 ש"ח עבור כל מכרז)`,
           showCancelButton: true,
-          confirmButtonText: 'כן, מחק',
+          confirmButtonText: 'בכל זאת אני רוצה למחוק',
+          cancelButtonText: 'ביטול'
+        });
+  
+        if (!warning.isConfirmed) return;
+  
+        // טופס תשלום 
+        const { value: confirmed } = await Swal.fire({
+          title: `לתשלום קנס של ${penaltyAmount} ש"ח`,
+          html: `
+            <input type="text" id="card-number" class="swal2-input" placeholder="מספר כרטיס">
+            <input type="text" id="expiry" class="swal2-input" placeholder="תוקף (MM/YY)">
+            <input type="text" id="cvv" class="swal2-input" placeholder="CVV">
+          `,
+          focusConfirm: false,
+          preConfirm: () => {
+            const number = document.getElementById('card-number').value;
+            const expiry = document.getElementById('expiry').value;
+            const cvv = document.getElementById('cvv').value;
+            if (!number || !expiry || !cvv) {
+              Swal.showValidationMessage('יש למלא את כל פרטי האשראי');
+              return false;
+            }
+            return true;
+          },
+          confirmButtonText: 'אני מסכים ומאשר מחיקה'
+        });
+  
+        if (!confirmed) return;
+      }
+    else {
+        // אם אין מכרזים פעילים עם הצעות – הצגת אזהרה כללית
+        const simpleConfirm = await Swal.fire({
+          icon: 'warning',
+          title: 'האם את/ה בטוח/ה שברצונך למחוק את המשתמש?',
+          html: `שים לב: מחיקת המשתמש תגרור מחיקה <strong>בלתי הפיכה</strong> של כל המכרזים שפרסמת ושל כל ההצעות שהגשת.`,
+          showCancelButton: true,
+          confirmButtonText: 'מחק אותי מהאתר',
           cancelButtonText: 'ביטול'
         });
       
-        if (!firstConfirm.isConfirmed) return;
-      
-        // שלב שני – אזהרה סופית
-        const secondConfirm = await Swal.fire({
-          icon: 'warning',
-          title: 'אזהרה סופית',
-          html: 'בלחיצתך על <strong>אישור</strong> הנך מאשר/ת כי כל המכרזים שפרסמת וכל ההצעות שהצעת יימחקו לצמיתות.',
-          showCancelButton: true,
-          confirmButtonText: 'אישור סופי',
-          cancelButtonText: 'ביטול'
-        });
-      
-        if (!secondConfirm.isConfirmed) return;
-      
-        // ביצוע המחיקה בפועל
-        try {
-          const res = await fetch('http://localhost:3001/api/delete', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: user.email })
-          });
-      
-          const result = await res.json();
-          if (res.ok) {
-            await Swal.fire({
-              icon: 'success',
-              title: 'המשתמש נמחק בהצלחה',
-              confirmButtonText: 'אישור'
-            });
-      
-            localStorage.removeItem("user");
-            window.location.href = "login.html";
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'שגיאה במחיקה',
-              text: result.message || 'אירעה שגיאה במחיקת המשתמש'
-            });
-          }
-        } catch (err) {
-          console.error("שגיאה:", err);
-          Swal.fire({
-            icon: 'error',
-            title: 'שגיאה בשרת',
-            text: 'לא ניתן היה לבצע את המחיקה'
-          });
-        }
+        if (!simpleConfirm.isConfirmed) return;
       }
       
-async function deleteAuction(auctionId) {
-    const confirmed = confirm("האם את בטוחה שברצונך למחוק את המכרז ?");
-    if (!confirmed) return;
-
+      // שלב סופי – מחיקת המשתמש
+      const res = await fetch('http://localhost:3001/api/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email })
+      });
+  
+      const result = await res.json();
+      if (res.ok) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'המשתמש נמחק בהצלחה'
+        });
+        localStorage.removeItem("user");
+        window.location.href = "login.html";
+      } else {
+        Swal.fire({ icon: 'error', title: 'שגיאה במחיקה', text: result.message || 'אירעה שגיאה' });
+      }
+    } catch (err) {
+      console.error("שגיאה במחיקת משתמש:", err);
+      Swal.fire({ icon: 'error', title: 'שגיאת שרת', text: 'פעולת המחיקה נכשלה' });
+    }
+  }
+  
+      
+  async function deleteAuction(auctionId) {
     try {
+        // שליפת הצעות מחיר עבור המכרז
+        const bidsRes = await fetch(`http://localhost:3001/api/bids/by-auction/${auctionId}`);
+        const bids = await bidsRes.json();
+
+        if (bids.length === 0) {
+            // אין הצעות – ניתן למחוק מיד
+            const confirmDelete = await Swal.fire({
+                icon: 'warning',
+                title: 'מחיקת מכרז',
+                text: 'האם את/ה בטוח/ה שברצונך למחוק את המכרז?',
+                showCancelButton: true,
+                confirmButtonText: 'מחק',
+                cancelButtonText: 'ביטול'
+            });
+            if (!confirmDelete.isConfirmed) return;
+        } else {
+            // יש הצעות – הצגת אזהרה על קנס
+            const warning = await Swal.fire({
+                icon: 'warning',
+                title: 'כבר הוגשו הצעות מחיר',
+                html: `לא ניתן למחוק מכרז זה מיידית כי כבר הוגשו אליו הצעות.<br><strong>אם תבחר/י למחוק, תידרש/י לשלם קנס של 30 ש"ח.</strong>`,
+                showCancelButton: true,
+                confirmButtonText: 'אני רוצה בכל זאת',
+                cancelButtonText: 'ביטול'
+            });
+            if (!warning.isConfirmed) return;
+
+            // טופס תשלום
+            const { value: confirmed } = await Swal.fire({
+                title: `לתשלום קנס של 30 ש"ח`,
+                html: `
+                    <input type="text" id="card-number" class="swal2-input" placeholder="מספר כרטיס">
+                    <input type="text" id="expiry" class="swal2-input" placeholder="תוקף (MM/YY)">
+                    <input type="text" id="cvv" class="swal2-input" placeholder="CVV">
+                `,
+                focusConfirm: false,
+                preConfirm: () => {
+                    const number = document.getElementById('card-number').value;
+                    const expiry = document.getElementById('expiry').value;
+                    const cvv = document.getElementById('cvv').value;
+                    if (!number || !expiry || !cvv) {
+                        Swal.showValidationMessage('יש למלא את כל פרטי האשראי');
+                        return false;
+                    }
+                    return true;
+                },
+                confirmButtonText: 'שלם ומחק מכרז'
+            });
+
+            if (!confirmed) return;
+        }
+
+        // מחיקת המכרז בפועל
         const res = await fetch(`http://localhost:3001/api/auctions/${auctionId}`, {
             method: "DELETE"
         });
         const result = await res.json();
-        alert("✅ " + result.message);
+        Swal.fire({
+            icon: 'success',
+            title: result.message || 'המכרז נמחק בהצלחה'
+        });
 
-        // ריענון הרשימה
         location.reload();
     } catch (err) {
         console.error("❌ שגיאה במחיקת מכרז:", err);
-        alert("אירעה שגיאה בעת מחיקת המכרז.");
+        Swal.fire({
+            icon: 'error',
+            title: 'שגיאה',
+            text: 'אירעה שגיאה בעת מחיקת המכרז'
+        });
     }
 }
+
 function editAuction(auction) {
     // שמירת המכרז לעריכה ב-sessionStorage
     sessionStorage.setItem("editAuction", JSON.stringify(auction));
