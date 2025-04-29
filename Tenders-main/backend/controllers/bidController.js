@@ -1,5 +1,7 @@
 const Bid = require("../models/bidModel");
 const User = require("../models/userModel");
+const transporter = require('../mailer'); // ודאי שהנתיב נכון בהתאם למיקום הקובץ שלך
+
 
 exports.submitBid = async (req, res) => {
   const { auctionId, userEmail, amount } = req.body;
@@ -9,14 +11,35 @@ exports.submitBid = async (req, res) => {
   }
 
   try {
+    // שלב 1: שמירת ההצעה למסד הנתונים
     const newBid = new Bid({ auctionId, userEmail, amount });
     await newBid.save();
+
+    // שלב 2: שליפת מציעים קודמים (למעט המשתמש הנוכחי)
+    const previousBidders = await Bid.find({
+      auctionId: auctionId,
+      userEmail: { $ne: userEmail }
+    }).distinct('userEmail');
+
+    // שלב 3: שליחת מיילים למציעים הקודמים
+    for (let email of previousBidders) {
+      await transporter.sendMail({
+        from: '"Tenders Notification" <y0548493586@gmail.com>', // ← החליפי לכתובת המייל שלך
+        to: email,
+        subject: "📢 הוגשה הצעת מחיר חדשה למכרז שהתעניינת בו",
+        text: `משתמש נוסף הגיש הצעה חדשה למכרז שהשתתפת בו. אם את/ה מעוניין לזכות, היכנס עכשיו והגש הצעה גבוהה יותר: http://localhost:3001/`
+      });
+    }
+
+    // שלב 4: תגובה ללקוח
     res.status(201).json({ message: "ההצעה נשמרה בהצלחה!" });
+
   } catch (error) {
-    console.error("שגיאה בשמירת ההצעה:", error);
+    console.error("❌ שגיאה בשמירת ההצעה או בשליחת מייל:", error);
     res.status(500).json({ error: "שגיאה בשרת" });
   }
 };
+
 
 // ✅ פונקציה לשליפת ההצעה הגבוהה ביותר למכרז מסוים
 exports.getHighestBid = async (req, res) => {

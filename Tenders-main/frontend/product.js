@@ -83,8 +83,24 @@ if (now < endDate) {
     button.textContent = "הגש הצעת מחיר";
     
     button.addEventListener("click", function (e) {
-        if (user && user.email === product.user_email) {
-            e.preventDefault(); // ביטול מעבר לעמוד
+        e.preventDefault(); // תמיד למנוע ברירת מחדל כדי לשלוט בעצמנו
+    
+        if (!user) {
+            // 🔥 המשתמש לא מחובר
+            Swal.fire({
+                icon: "warning",
+                title: "אינך מחובר",
+                text: "כדי להגיש הצעת מחיר, יש להתחבר או להירשם.",
+                showCancelButton: true,
+                confirmButtonText: "התחברות/הרשמה",
+                cancelButtonText: "ביטול"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "login.html"; // מעבר לעמוד התחברות
+                }
+            });
+        } else if (user.email === product.user_email) {
+            // 🔥 המשתמש הוא מפרסם המכרז
             Swal.fire({
                 icon: "warning",
                 title: "שימו לב!",
@@ -92,9 +108,11 @@ if (now < endDate) {
                 confirmButtonText: "הבנתי"
             });
         } else {
+            // 🔥 המשתמש מחובר ויכול להגיש הצעה
             window.location.href = `bid.html?id=${product._id}&name=${encodeURIComponent(product.product_name)}&price=${product.starting_price}&image=${encodeURIComponent(product.image_url)}`;
         }
     });
+    
     
     document.querySelector(".order-md-1").appendChild(button);
     

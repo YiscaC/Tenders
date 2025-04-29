@@ -124,20 +124,26 @@ function renderAuctions(auctions, containerPrefix) {
         }
 
         if (containerPrefix === "my-auctions") {
-            const editBtn = document.createElement("button");
-            editBtn.textContent = "✏️ ";
-            editBtn.className = "btn btn-sm btn-primary";
-            editBtn.onclick = () => editAuction(a);
 
+            const btnGroup = document.createElement("div");
+            btnGroup.className = "button-group";
+        
+            if (isActive) {
+                // 📝 אם המכרז פעיל - אפשר לערוך
+                const editBtn = document.createElement("button");
+                editBtn.textContent = "✏️ ";
+                editBtn.className = "btn btn-sm btn-primary";
+                editBtn.onclick = () => editAuction(a);
+                btnGroup.appendChild(editBtn);
+            }
+        
+            // 🗑️ תמיד אפשר למחוק (גם אם הסתיים)
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "🗑️ ";
             deleteBtn.className = "btn btn-sm btn-danger";
             deleteBtn.onclick = () => deleteAuction(a._id);
-
-            const btnGroup = document.createElement("div");
-            btnGroup.className = "button-group";
-            btnGroup.appendChild(editBtn);
             btnGroup.appendChild(deleteBtn);
+        
             bottomContent.appendChild(btnGroup);
 
             const bidsRes = await fetch(`http://localhost:3001/api/bids/by-auction/${a._id}`);
@@ -382,15 +388,46 @@ async function logout() {
     }
   }
   
-      
   async function deleteAuction(auctionId) {
     try {
-        // שליפת הצעות מחיר עבור המכרז
+        // שליפת פרטי המכרז כדי לבדוק אם הסתיים
+        const auctionRes = await fetch(`http://localhost:3001/api/auctions/${auctionId}`);
+        const auction = await auctionRes.json();
+        const endDate = new Date(auction.createdAt);
+        endDate.setDate(endDate.getDate() + auction.duration_days);
+        const now = new Date();
+        const isActive = now < endDate;
+
+        // אם המכרז הסתיים – אישור פשוט למחיקה (בלי קנס)
+        if (!isActive) {
+            const confirmDelete = await Swal.fire({
+                icon: 'warning',
+                title: 'מחיקת מכרז שהסתיים',
+                text: 'המכרז הסתיים. האם את/ה בטוח/ה שברצונך למחוק אותו?',
+                showCancelButton: true,
+                confirmButtonText: 'מחק',
+                cancelButtonText: 'ביטול'
+            });
+            if (!confirmDelete.isConfirmed) return;
+
+            const res = await fetch(`http://localhost:3001/api/auctions/${auctionId}`, {
+                method: "DELETE"
+            });
+            const result = await res.json();
+            await Swal.fire({
+                icon: 'success',
+                title: result.message || 'המכרז נמחק בהצלחה'
+            }).then(() => {
+                location.reload();
+            });
+            return;
+        }
+
+        // אם המכרז עדיין פעיל – המשך הלוגיקה הקיימת שלך
         const bidsRes = await fetch(`http://localhost:3001/api/bids/by-auction/${auctionId}`);
         const bids = await bidsRes.json();
 
         if (bids.length === 0) {
-            // אין הצעות – ניתן למחוק מיד
             const confirmDelete = await Swal.fire({
                 icon: 'warning',
                 title: 'מחיקת מכרז',
@@ -401,7 +438,6 @@ async function logout() {
             });
             if (!confirmDelete.isConfirmed) return;
         } else {
-            // יש הצעות – הצגת אזהרה על קנס
             const warning = await Swal.fire({
                 icon: 'warning',
                 title: 'כבר הוגשו הצעות מחיר',
@@ -412,7 +448,6 @@ async function logout() {
             });
             if (!warning.isConfirmed) return;
 
-            // טופס תשלום
             const { value: confirmed } = await Swal.fire({
                 title: `לתשלום קנס של 30 ש"ח`,
                 html: `
@@ -442,12 +477,12 @@ async function logout() {
             method: "DELETE"
         });
         const result = await res.json();
-        Swal.fire({
+        await Swal.fire({
             icon: 'success',
             title: result.message || 'המכרז נמחק בהצלחה'
+        }).then(() => {
+            location.reload();
         });
-
-        location.reload();
     } catch (err) {
         console.error("❌ שגיאה במחיקת מכרז:", err);
         Swal.fire({
@@ -457,6 +492,8 @@ async function logout() {
         });
     }
 }
+
+
 
 function editAuction(auction) {
     // שמירת המכרז לעריכה ב-sessionStorage

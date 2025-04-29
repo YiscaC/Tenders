@@ -1,19 +1,21 @@
 
-
 console.log("📢 publish-tender.js נטען בהצלחה!");
 const urlParams = new URLSearchParams(window.location.search);
 const isEditMode = urlParams.get("edit") === "true";
 const auctionId = urlParams.get("id");
 
-document.addEventListener("DOMContentLoaded", () => {
+//הצגת טופס העריכה/העלאת המכרז
+document.addEventListener("DOMContentLoaded",  () => {
     if (isEditMode && auctionId) {
         fetch(`http://localhost:3001/api/auctions/${auctionId}`)
             .then(res => res.json())
-            .then(data => {
+            .then(async data => {
                 document.getElementById("productName").value = data.product_name || "";
                 document.getElementById("productDescription").value = data.description || "";
                 document.getElementById("startingPrice").value = data.starting_price || "";
                 document.getElementById("auctionDuration").value = data.duration_days || "";
+
+                
 
                 for (let key in data) {
                     const input = document.getElementById(key);
@@ -22,9 +24,42 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
 
+                
+
                 // ✅ הסתרת תשלום והוספת כפתור "שמור"
                 document.getElementById("payment-form").style.display = "none";
                 document.getElementById("open-payment-form").style.display = "none";
+
+                // ✅ הסתרת שדות "מחיר התחלתי" ו"משך המכרז" בעדכון מכרז
+                // ✨ כאן נבדוק אם הוגשו הצעות
+                let hasBids = false;
+                try {
+                    const bidsRes = await fetch(`http://localhost:3001/api/bids/by-auction/${auctionId}`);
+                    const bidsData = await bidsRes.json();
+                    hasBids = bidsData.length > 0;
+                } catch (error) {
+                    console.error("❌ שגיאה בבדיקת הצעות מחיר", error);
+                }
+
+                // אם יש הצעות - להסתיר שדות מחיר ומשך
+                if (hasBids) {
+                    const startingPriceField = document.getElementById("startingPrice");
+                    const startingPriceContainer = startingPriceField?.closest(".mb-3");
+                    if (startingPriceContainer) startingPriceContainer.style.display = "none";
+
+                    const auctionDurationField = document.getElementById("auctionDuration");
+                    const auctionDurationContainer = auctionDurationField?.closest(".mb-3");
+                    if (auctionDurationContainer) auctionDurationContainer.style.display = "none";
+                }
+                
+
+
+                // הסרת הצ'קבוקסים לגמרי
+                const terms1Container = document.getElementById("terms-1")?.closest(".form-check");
+                const terms2Container = document.getElementById("terms-2")?.closest(".form-check");
+                if (terms1Container) terms1Container.remove();
+                if (terms2Container) terms2Container.remove();
+
 
                 const saveBtn = document.createElement("button");
                 saveBtn.id = "save-changes-button";
@@ -40,6 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("📢 הדף נטען בהצלחה!");
+
+
+    
 
     function setupFormListener() {
         const form = document.getElementById("auction-form");
@@ -160,73 +198,213 @@ document.addEventListener("DOMContentLoaded", function () {
         openPaymentButton.style.display = "none"; // מסתיר את כפתור התשלום
     });
 
-        // בדיקה על תוקף כרטיס
-        function isValidExpiry(expiry) {
-            const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
-            if (!expiryRegex.test(expiry)) return false;
-            const [expMonth, expYear] = expiry.split('/').map(Number);
-            const now = new Date();
-            const expiryDate = new Date(2000 + expYear, expMonth);
-            return expiryDate >= now;
-        }
-
     // פונקציה לבדוק אם כל השדות מלאים
     function checkPaymentFields() {
-        // קבלת ערכי השדות
-    const productName = document.getElementById("productName").value.trim();
-    const productDescription = document.getElementById("productDescription").value.trim();
-    const startingPrice = document.getElementById("startingPrice").value.trim();
-    const auctionDuration = document.getElementById("auctionDuration").value.trim();
-    const productImage = document.getElementById("productImage").files.length > 0; // לבדוק אם הועלתה תמונה
-    const checkbox1 = document.getElementById("terms-1").checked;
-    const checkbox2 = document.getElementById("terms-2").checked;
-
-    const cardValid = /^\d{16}$/.test(cardNumber.value.trim());
-    const expiryValid = isValidExpiry(cardExpiry.value.trim());
-    const cvvValid = /^\d{3}$/.test(cardCVV.value.trim());
-    const holderValid = cardHolder.value.trim() !== "";
+        const productName = document.getElementById("productName").value.trim();
+        const productDescription = document.getElementById("productDescription").value.trim();
+        const startingPrice = document.getElementById("startingPrice").value.trim();
+        const auctionDuration = document.getElementById("auctionDuration").value.trim();
+        const productImage = document.getElementById("productImage").files.length > 0;
     
-          // בדיקת האם כל הפרטים מלאים
-    if (
-        cardValid &&
-        expiryValid &&
-        cvvValid &&
-        holderValid &&
-        productName !== "" &&
-        productDescription !== "" &&
-        startingPrice !== "" &&
-        auctionDuration !== "" &&
-        productImage &&
-        checkbox1 &&
-        checkbox2
-    ) {
-            confirmPaymentButton.disabled = false; // הפעלת כפתור אישור תשלום
-        } else {
-            confirmPaymentButton.disabled = true; // השארת הכפתור כבוי אם משהו חסר
+        const checkbox1 = document.getElementById("terms-1").checked;
+        const checkbox2 = document.getElementById("terms-2").checked;
+    
+        const cardNumberFilled = cardNumber.value.trim() !== "";
+        const cardExpiryFilled = cardExpiry.value.trim() !== "";
+        const cardCVVFilled = cardCVV.value.trim() !== "";
+        const cardHolderFilled = cardHolder.value.trim() !== "";
+
+           // 🔥 בדיקה גם של כל השדות הדינמיים:
+    const dynamicInputs = document.querySelectorAll("#dynamic-questions input");
+    let allDynamicFieldsFilled = true;
+    dynamicInputs.forEach(input => {
+        if (input.value.trim() === "") {
+            allDynamicFieldsFilled = false;
+        }
+    });
+    
+        const allFieldsFilled = 
+            productName &&
+            productDescription &&
+            startingPrice &&
+            auctionDuration &&
+            productImage &&
+            cardNumberFilled &&
+            cardExpiryFilled &&
+            cardCVVFilled &&
+            cardHolderFilled &&
+            checkbox1 &&
+            checkbox2 && 
+            allDynamicFieldsFilled;
+
+    
+        confirmPaymentButton.disabled = !allFieldsFilled;
+    }
+    
+    
+    //בדיקת תקינות הקלט-בלחיצה על אישור ותשלום
+    function validatePaymentFields() {
+        let isValid = true;
+    
+        // ניקוי הודעות קודמות
+        document.getElementById("error-card").textContent = "";
+        document.getElementById("error-expiry").textContent = "";
+        document.getElementById("error-cvv").textContent = "";
+    
+        // מספר כרטיס - חייב 16 ספרות
+        const cardNumberValue = cardNumber.value.trim();
+        if (!/^\d{16}$/.test(cardNumberValue)) {
+            document.getElementById("error-card").textContent = "מספר כרטיס לא תקין - יש להכניס בדיוק 16 ספרות.";
+            isValid = false;
+        }
+    
+    // תוקף - פורמט MM/YY + לבדוק שהתוקף לא עבר
+    const cardExpiryValue = cardExpiry.value.trim();
+    if (!/^\d{2}\/\d{2}$/.test(cardExpiryValue)) {
+        document.getElementById("error-expiry").textContent = "תוקף לא תקין - יש להכניס בפורמט MM/YY.";
+        isValid = false;
+    } else {
+        const [month, year] = cardExpiryValue.split("/").map(Number);
+        const now = new Date();
+        const currentYear = now.getFullYear() % 100; // רק שתי ספרות אחרונות
+        const currentMonth = now.getMonth() + 1; // חודשים ב-JS מתחילים מ-0
+
+        if (year < currentYear || (year === currentYear && month < currentMonth)) {
+            document.getElementById("error-expiry").textContent = "תוקף הכרטיס פג.";
+            isValid = false;
+        } else if (month < 1 || month > 12) {
+            document.getElementById("error-expiry").textContent = "חודש לא תקין.";
+            isValid = false;
         }
     }
+    
+    // CVV - חייב להיות בדיוק 3 ספרות
+    const cardCVVValue = cardCVV.value.trim();
+    if (!/^\d{3}$/.test(cardCVVValue)) {
+        document.getElementById("error-cvv").textContent = "CVV לא תקין - יש להכניס בדיוק 3 ספרות.";
+        isValid = false;
+    }
 
+        // בדיקת צ'קבוקסים
+        const checkbox1 = document.getElementById("terms-1");
+        const checkbox2 = document.getElementById("terms-2");
+    
+        if (!checkbox1.checked) {
+            Swal.fire({
+                icon: 'error',
+                title: 'יש לאשר את תנאי השימוש הראשון!',
+            });
+            isValid = false;
+        } else if (!checkbox2.checked) {
+            Swal.fire({
+                icon: 'error',
+                title: 'יש לאשר את תנאי השימוש השני!',
+            });
+            isValid = false;
+        }
+    
+        return isValid;
+    }
+    
+
+cardNumber.addEventListener("input", function() {
+    if (!/^\d{16}$/.test(cardNumber.value.trim())) {
+        document.getElementById("error-card").textContent = "מספר כרטיס לא תקין - יש להכניס בדיוק 16 ספרות.";
+    } else {
+        document.getElementById("error-card").textContent = "";
+    }
+});
+
+cardExpiry.addEventListener("input", function() {
+    const val = cardExpiry.value.trim();
+    if (!/^\d{2}\/\d{2}$/.test(val)) {
+        document.getElementById("error-expiry").textContent = "תוקף לא תקין - פורמט נכון הוא MM/YY.";
+    } else {
+        document.getElementById("error-expiry").textContent = "";
+    }
+});
+
+cardCVV.addEventListener("input", function() {
+    if (!/^\d{3}$/.test(cardCVV.value.trim())) {
+        document.getElementById("error-cvv").textContent = "CVV לא תקין - יש להכניס בדיוק 3 ספרות.";
+    } else {
+        document.getElementById("error-cvv").textContent = "";
+    }
+});
+
+    
     // מעקב אחר שינויים בשדות הקלט
     cardNumber.addEventListener("input", checkPaymentFields);
     cardExpiry.addEventListener("input", checkPaymentFields);
     cardCVV.addEventListener("input", checkPaymentFields);
     cardHolder.addEventListener("input", checkPaymentFields);
-document.getElementById("terms-1").addEventListener("change", checkPaymentFields);
-document.getElementById("terms-2").addEventListener("change", checkPaymentFields);
+    document.getElementById("terms-1").addEventListener("change", checkPaymentFields);
+    document.getElementById("terms-2").addEventListener("change", checkPaymentFields);
+    document.getElementById("productName").addEventListener("input", checkPaymentFields);
+    document.getElementById("productDescription").addEventListener("input", checkPaymentFields);
+    document.getElementById("startingPrice").addEventListener("input", checkPaymentFields);
+    document.getElementById("auctionDuration").addEventListener("change", checkPaymentFields);
+    document.getElementById("productImage").addEventListener("change", checkPaymentFields);
 
     // אישור תשלום לאחר לחיצה
-    confirmPaymentButton.addEventListener("click", function () {
-        Swal.fire({
-            title: "✅ תשלום התקבל והמכרז פורסם בהצלה!",
-          //  text: "כעת תוכל לפרסם את המכרז.",
-            icon: "success"
-        }).then(() => {
-            sessionStorage.setItem("paymentDone", "true"); // שמירת אישור תשלום
-            publishButton.disabled = false; // הפעלת כפתור פרסום המכרז
-            paymentForm.style.display = "none"; // הסתרת טופס התשלום
-            confirmPaymentButton.style.display = "none"; // 🔹 הסתרת כפתור אישור תשלום
-        });
+    confirmPaymentButton.addEventListener("click", async function (e) {
+        e.preventDefault(); // כדי למנוע רענון
+    
+        if (validatePaymentFields()) {
+            // הכנת נתוני המכרז
+            const user = JSON.parse(localStorage.getItem("user"));
+            const form = document.getElementById("auction-form");
+            const formData = new FormData(form);
+    
+            formData.append("user_name", user.name);
+            formData.append("user_email", user.email);
+            formData.append("category", new URLSearchParams(window.location.search).get("category"));
+            formData.append("product_name", document.getElementById("productName").value.trim());
+            formData.append("description", document.getElementById("productDescription").value.trim());
+            formData.append("starting_price", document.getElementById("startingPrice").value.trim());
+            formData.append("duration_days", document.getElementById("auctionDuration").value.trim());
+            
+            const dynamicFields = {};
+            const inputs = document.querySelectorAll("#dynamic-questions input");
+            inputs.forEach(input => {
+                if (input.id.trim() !== "" && input.value.trim() !== "") {
+                    dynamicFields[input.id] = input.value.trim();
+                }
+            });
+            formData.append("dynamicFields", JSON.stringify(dynamicFields));
+    
+            const imageFile = document.getElementById("productImage").files[0];
+            if (imageFile) {
+                formData.append("image", imageFile);
+            }
+    
+            // שליחת POST לפרסום מכרז
+            try {
+                const response = await fetch("http://localhost:3001/api/auctions", {
+                    method: "POST",
+                    body: formData
+                });
+    
+                if (response.ok) {
+                    Swal.fire({
+                        title: "✅ תשלום התקבל והמכרז פורסם בהצלחה!",
+                        icon: "success"
+                    }).then(() => {
+                        sessionStorage.setItem("paymentDone", "true");
+                        window.location.href = "home.html"; // מעבר לדף הבית אחרי פרסום
+                    });
+                } else {
+                    const errorData = await response.json();
+                    alert("❌ שגיאה בפרסום: " + errorData.error);
+                }
+            } catch (error) {
+                console.error("❌ שגיאה בפרסום:", error);
+                alert("❌ אירעה שגיאה בשליחת המכרז.");
+            }
+        }
     });
+    
+    
 
     // בעת טעינת הדף - בדיקת סטטוס תשלום
     if (sessionStorage.getItem("paymentDone") === "true") {
@@ -237,6 +415,7 @@ document.getElementById("terms-2").addEventListener("change", checkPaymentFields
     }
 });
 
+//שמירת השינויים שנעשו במכרז
 async function handleUpdateAuction() {
     const form = document.getElementById("auction-form");
     const formData = new FormData(form);
@@ -250,6 +429,11 @@ async function handleUpdateAuction() {
     formData.append("description", document.getElementById("productDescription").value.trim());
     formData.append("starting_price", document.getElementById("startingPrice").value.trim());
     formData.append("duration_days", document.getElementById("auctionDuration").value.trim());
+
+    const imageFile = document.getElementById("productImage").files[0];
+    if (imageFile) {
+        formData.append("image", imageFile);
+    }
 
     // שדות דינמיים
     const dynamicFields = {};
