@@ -1,3 +1,12 @@
+document.addEventListener("DOMContentLoaded", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("clearLogin") === "true") {
+      console.log("📢 מתבצע ניקוי התחברות...");
+      localStorage.removeItem("user");
+      sessionStorage.removeItem("authenticated");
+    }
+  });
+  
 document.addEventListener('DOMContentLoaded', function () {
     const listProductHTML = document.querySelector('.listProduct');
 

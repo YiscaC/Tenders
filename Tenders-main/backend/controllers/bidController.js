@@ -27,7 +27,14 @@ exports.submitBid = async (req, res) => {
         from: '"Tenders Notification" <y0548493586@gmail.com>', // ← החליפי לכתובת המייל שלך
         to: email,
         subject: "📢 הוגשה הצעת מחיר חדשה למכרז שהתעניינת בו",
-        text: `משתמש נוסף הגיש הצעה חדשה למכרז שהשתתפת בו. אם את/ה מעוניין לזכות, היכנס עכשיו והגש הצעה גבוהה יותר: http://localhost:3001/`
+        html: `
+        <div dir="rtl" style="font-family:Arial, sans-serif; text-align:right; font-size:16px;">
+          משתמש נוסף הגיש הצעה חדשה למכרז שהשתתפת בו.<br>
+          אם את/ה מעוניין לזכות – היכנס עכשיו והגש הצעה גבוהה יותר.<br><br>
+          <a href="http://localhost:3001/?clearLogin=true" target="_blank">לחץ כאן כדי להיכנס לאתר</a>
+
+        </div>
+        `
       });
     }
 
