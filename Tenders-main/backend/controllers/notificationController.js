@@ -117,7 +117,7 @@ exports.handleAuctionClosures = async (req, res) => {
               <div dir="rtl" style="font-family:Arial; text-align:right;">
                 המכרז שלך עבור <strong>${auction.product_name}</strong> הסתיים.<br>
                 הזוכה הוא: ${highest.userEmail} עם הצעה של ₪${highest.amount}.<br><br>
-                <a href="http://localhost:3001/profile.html" target="_blank">לצפייה בפרטי המכרז</a>
+                <a href="http://localhost:3001/login.html?clearLogin=true" target="_blank">לצפייה בפרטי המכרז</a>
               </div>`
           });
 
@@ -135,7 +135,7 @@ exports.handleAuctionClosures = async (req, res) => {
             html: `
               <div dir="rtl" style="font-family:Arial; text-align:right;">
                 ברכות! זכית במכרז עבור <strong>${auction.product_name}</strong> בסכום של ₪${highest.amount}.<br>
-                <a href="http://localhost:3001/profile.html#my-wins" target="_blank">לצפייה בזכיות שלך</a>
+                <a href="http://localhost:3001/login.html?clearLogin=true" target="_blank">לצפייה בזכיות שלך</a>
               </div>`
           });
 

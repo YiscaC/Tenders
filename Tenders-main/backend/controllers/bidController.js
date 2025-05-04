@@ -21,19 +21,23 @@ exports.submitBid = async (req, res) => {
       userEmail: { $ne: userEmail }
     }).distinct('userEmail');
 
+    const auction = await Auction.findById(auctionId);
+
     // שלב 3: שליחת מיילים למציעים הקודמים
     for (let email of previousBidders) {
+      console.log("🧾 auctionId:", auctionId);
+console.log("📦 שם מוצר למייל:", auction?.product_name);
+
       await transporter.sendMail({
         from: '"Tenders Notification" <y0548493586@gmail.com>', // ← החליפי לכתובת המייל שלך
         to: email,
         subject: "📢 הוגשה הצעת מחיר חדשה למכרז שהתעניינת בו",
         html: `
-        <div dir="rtl" style="font-family:Arial, sans-serif; text-align:right; font-size:16px;">
-          משתמש נוסף הגיש הצעה חדשה למכרז שהשתתפת בו.<br>
-          אם את/ה מעוניין לזכות – היכנס עכשיו והגש הצעה גבוהה יותר.<br><br>
-          <a href="http://localhost:3001/?clearLogin=true" target="_blank">לחץ כאן כדי להיכנס לאתר</a>
-
-        </div>
+          <div dir="rtl" style="font-family:Arial, sans-serif; text-align:right; font-size:16px;">
+            משתמש נוסף הגיש הצעה חדשה למכרז <strong>${auction.product_name}</strong> שהשתתפת בו.<br>
+            אם את/ה מעוניין לזכות – היכנס עכשיו והגש הצעה גבוהה יותר.<br><br>
+            <a href="http://localhost:3001/?clearLogin=true" target="_blank">לחץ כאן כדי להיכנס לאתר</a>
+          </div>
         `
       });
     }
