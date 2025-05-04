@@ -40,6 +40,7 @@ const auctionSchema = new mongoose.Schema({
     winner: { type: Boolean, default: false },
     owner: { type: Boolean, default: false }
   }
+  
 
 }, { timestamps: true });
 

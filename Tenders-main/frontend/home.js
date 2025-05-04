@@ -1,8 +1,13 @@
+fetch("http://localhost:3001/api/notifications/check-expired")
+  .then(res => res.json())
+  .then(data => console.log("🎯 סיום מכרזים ומיילים:", data));
+
 document.addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("clearLogin") === "true") {
       console.log("📢 מתבצע ניקוי התחברות...");
       localStorage.removeItem("user");
+
       sessionStorage.removeItem("authenticated");
     }
   });
