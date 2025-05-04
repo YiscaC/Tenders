@@ -133,5 +133,15 @@
             new bootstrap.Tooltip(tooltipTriggerEl);
           });
         });
+    
+          // אם הגענו עם clearLogin, ננקה כל מידע שמור
+          const params = new URLSearchParams(window.location.search);
+          if (params.get("clearLogin") === "true") {
+            localStorage.removeItem("user");
+            sessionStorage.removeItem("authenticated");
+            console.log("🧹 בוצע ניקוי מידע התחברות");
+          }
+    
+        
       </script>
 </body>

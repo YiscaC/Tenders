@@ -1,9 +1,22 @@
+
+  
 document.addEventListener("DOMContentLoaded", async () => {
     const user = JSON.parse(localStorage.getItem("user"));
     console.log("👤 משתמש מחובר:", user); // ✅ נראה מה שמור בלוקאל סטורג'
     if (!user || !user.email) {
-        alert("עליך להתחבר כדי לצפות באזור האישי");
-        window.location.href = "login.html";
+        Swal.fire({
+            icon: "warning",
+            title: "עליך להתחבר",
+            html: `
+                <p>עליך להתחבר כדי לצפות באזור האישי.</p>
+                <div class="d-flex justify-content-center mt-3 gap-3">
+                    <a href="login.html" class="btn btn-primary1">התחברות</a>
+                    <button class="btn btn-secondary" onclick="Swal.close()">אישור</button>
+                </div>
+            `,
+            showConfirmButton: false,
+            allowOutsideClick: true
+        });
         return;
     }
 

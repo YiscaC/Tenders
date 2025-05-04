@@ -119,10 +119,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     .then(data => {
       if (data.error) {
         errorMsg.textContent = data.error;
-      } else {
-        alert('ההצעה נשמרה בהצלחה!');
-        form.reset();
-        window.location.href = "home.html";
+      } else 
+      {
+        Swal.fire({
+          title: "✅ ההצעה נקלטה בהצלחה!",
+          icon: "success"
+      }).then(() => {
+          window.location.href = "home.html";
+      });
+       
       }
     })
     .catch(err => {

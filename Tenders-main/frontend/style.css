@@ -138,6 +138,17 @@
   direction: rtl;
   text-align: right;
 }
+.btn-primary{
+  background-color:#adadad;
+  border:#bdbdbd ;
+}
+.btn-primary:hover
+ {
+  background-color: #94928d; /* כהה יותר במעבר עכבר */
+}
+.btn-primary:active {
+  background-color: #94928d; /* כהה יותר במעבר עכבר */
+}
 
 
 

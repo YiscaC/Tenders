@@ -72,6 +72,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                 </div>
             </div>`;
+            setTimeout(() => {
+                const image = document.querySelector(".fixed-product-image");
+                if (image && image.src) {
+                  image.style.cursor = "zoom-in";
+                  image.addEventListener("click", () => {
+                    const modalImage = document.getElementById("modalImage");
+                    modalImage.src = image.src;
+                    const modal = new bootstrap.Modal(document.getElementById("imageModal"));
+                    modal.show();
+                  });
+                }
+              }, 100);
 
 // אחרי שהכנסת את התוכן ל-selectItem
 const now = new Date();
