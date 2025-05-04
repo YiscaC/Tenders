@@ -107,6 +107,7 @@
                                 <input class="form-control" type="text" id="register-username" name="name" required
                                     data-bs-toggle="tooltip" title="הכנס את שם המשתמש שלך">
                             </div>
+                        
                             <label class="form-label mt-2" for="register-email">אימייל</label>
                             <div class="input-group input-group-rtl">
                                 <span class="input-group-text">
@@ -115,6 +116,7 @@
                                 <input class="form-control" type="email" id="register-email" name="email" required
                                     data-bs-toggle="tooltip" title="הכנס את כתובת האימייל שלך">
                             </div>
+                        
                             <label class="form-label mt-2" for="register-password">סיסמה</label>
                             <div class="input-group input-group-rtl">
                                 <span class="input-group-text">
@@ -123,10 +125,25 @@
                                 <input class="form-control" type="password" id="register-password" name="password"
                                     required data-bs-toggle="tooltip" title="הכנס סיסמה חזקה">
                             </div>
-                            <div class="text-center mt-2">
-                                <input class="form-control form-button mt-3" type="submit" value="הירשם">
+                        
+                           <!-- ✅ שדה קוד אימות – יופיע רק לאחר שלב שליחת המייל -->
+<div id="verification-code-group" style="display: none;" class="mt-2">
+    <label class="form-label" for="verification-code">קוד אימות</label>
+    <div class="input-group input-group-rtl">
+        <span class="input-group-text">
+            <i class="bi bi-shield-lock-fill"></i>
+        </span>
+        <input class="form-control" type="text" id="verification-code" name="code"
+            data-bs-toggle="tooltip" title="הכנס את קוד האימות שקיבלת במייל">
+    </div>
+</div>
+
+                        
+                            <div class="text-center mt-3">
+                                <input class="form-control form-button" type="submit" value="הירשם">
                             </div>
                         </form>
+                        
                     </div>
                 </div>
             </div>
@@ -191,7 +208,7 @@
         $('[data-bs-toggle="tooltip"]').tooltip();
     });
 </script>
-```
+
 
 </body>
 

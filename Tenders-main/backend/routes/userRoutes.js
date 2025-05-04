@@ -4,7 +4,7 @@ const userController = require('../controllers/userController'); // Ensure this 
 
 // User Registration
 router.post('/register', userController.register); // שליחת קוד למייל
-// router.post('/register-with-code', userController.registerWithCode); // הרשמה עם קוד
+router.post('/register-with-code', userController.registerWithCode); // הרשמה עם קוד
 
 // User Login
 router.post('/login', userController.login);

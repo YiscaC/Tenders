@@ -2,9 +2,14 @@ const User = require('../models/userModel');
 const Auction = require('../models/auctionModel');
 const Bid = require('../models/bidModel');
 const { OAuth2Client } = require('google-auth-library');
+const transporter = require('../mailer');
+
 const googleClient = new OAuth2Client("119189325747-a84euov4bs6253ns12uuc1ii5fa8svcn.apps.googleusercontent.com");
 
-// User Registration
+// שמירת קודי אימות בזיכרון זמני
+const verificationCodes = {};
+
+// שלב 1: שליחת קוד אימות למייל
 exports.register = async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -13,24 +18,58 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: 'כתובת האימייל כבר קיימת במערכת' });
     }
 
-    const newUser = new User({ name, email, password, authProvider: 'local' });
-    await newUser.save();
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    res.status(201).json({ message: 'ההרשמה בוצעה בהצלחה' });
+    verificationCodes[email] = {
+      code,
+      name,
+      password,
+      expires: Date.now() + 10 * 60 * 1000
+    };
+
+    await transporter.sendMail({
+      from: '"Tenders Notification" <y0548493586@gmail.com>',
+      to: email,
+      subject: 'קוד אימות לאתר Tenders',
+      html: `<p>שלום ${name},</p><p>קוד האימות שלך הוא: <b>${code}</b></p>`
+    });
+
+    res.status(200).json({ message: 'נשלח קוד אימות למייל' });
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('שגיאה בשליחת מייל:', error);
+    res.status(500).json({ message: 'שגיאה בשליחת אימייל אימות' });
+  }
+};
 
-    if (error.code === 11000) {
-      const key = Object.keys(error.keyValue)[0];
-      const value = error.keyValue[key];
-      return res.status(400).json({ message: `ה-${key} "${value}" כבר קיים במערכת` });
-    }
+// שלב 2: השלמת הרשמה עם הקוד
+exports.registerWithCode = async (req, res) => {
+  const { email, code, name, password } = req.body;
+  const record = verificationCodes[email];
+  
+  if (!record || record.code !== code || record.expires < Date.now()) {
+    return res.status(400).json({ message: 'קוד לא תקף או שפג תוקפו' });
+  }
 
+  try {
+    const newUser = new User({
+      name,
+      email,
+      password,
+      authProvider: 'local'
+    });
+    
+   
+    await newUser.save();
+    delete verificationCodes[email];
+
+    res.status(201).json({ message: 'ההרשמה הושלמה', name: newUser.name, email });
+  } catch (error) {
+    console.error('שגיאה בהרשמה עם קוד:', error);
     res.status(500).json({ message: 'שגיאה בהרשמה' });
   }
 };
 
-// User Login
+// התחברות רגילה
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -58,7 +97,7 @@ exports.login = async (req, res) => {
   }
 };
 
-// Google Login
+// התחברות עם גוגל
 exports.googleLogin = async (req, res) => {
   const { token } = req.body;
 
@@ -90,7 +129,7 @@ exports.googleLogin = async (req, res) => {
   }
 };
 
-// Delete User (by email)
+// מחיקת משתמש לפי מייל
 exports.delete = async (req, res) => {
   const { email } = req.body;
 
@@ -111,7 +150,7 @@ exports.delete = async (req, res) => {
   }
 };
 
-// Update User Details
+// עדכון פרטי משתמש
 exports.updateUser = async (req, res) => {
   const { email } = req.params;
   const { name, email: newEmail, password } = req.body;
@@ -139,7 +178,7 @@ exports.updateUser = async (req, res) => {
       user.password = password;
 
       if (user.authProvider === 'google') {
-        user.authProvider = 'local'; // מאפשר התחברות רגילה מהשלב הזה
+        user.authProvider = 'local';
       }
     }
 
@@ -151,3 +190,5 @@ exports.updateUser = async (req, res) => {
     res.status(500).json({ error: "שגיאה בעדכון המשתמש" });
   }
 };
+
+
