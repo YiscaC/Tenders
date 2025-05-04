@@ -328,25 +328,56 @@ async function logout() {
   
         // טופס תשלום 
         const { value: confirmed } = await Swal.fire({
-          title: `לתשלום קנס של ${penaltyAmount} ש"ח`,
-          html: `
-            <input type="text" id="card-number" class="swal2-input" placeholder="מספר כרטיס">
-            <input type="text" id="expiry" class="swal2-input" placeholder="תוקף (MM/YY)">
-            <input type="text" id="cvv" class="swal2-input" placeholder="CVV">
-          `,
-          focusConfirm: false,
-          preConfirm: () => {
-            const number = document.getElementById('card-number').value;
-            const expiry = document.getElementById('expiry').value;
-            const cvv = document.getElementById('cvv').value;
-            if (!number || !expiry || !cvv) {
-              Swal.showValidationMessage('יש למלא את כל פרטי האשראי');
-              return false;
-            }
-            return true;
-          },
-          confirmButtonText: 'אני מסכים ומאשר מחיקה'
-        });
+            title: `לתשלום קנס של ${penaltyAmount} ש"ח`,
+            html: `
+              <input type="text" id="card-number" class="swal2-input" placeholder="מספר כרטיס">
+              <input type="text" id="expiry" class="swal2-input" placeholder="תוקף (MM/YY)">
+              <input type="text" id="cvv" class="swal2-input" placeholder="CVV">
+            `,
+            focusConfirm: false,
+            preConfirm: () => {
+              const number = document.getElementById('card-number').value.trim();
+              const expiry = document.getElementById('expiry').value.trim();
+              const cvv = document.getElementById('cvv').value.trim();
+          
+              // 🔒 בדיקות תקינות
+              const cardRegex = /^\d{16}$/;
+              const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+              const cvvRegex = /^\d{3}$/;
+          
+              if (!number || !expiry || !cvv) {
+                Swal.showValidationMessage('יש למלא את כל השדות');
+                return false;
+              }
+          
+              if (!cardRegex.test(number)) {
+                Swal.showValidationMessage('מספר כרטיס חייב להיות בן 16 ספרות');
+                return false;
+              }
+          
+              if (!expiryRegex.test(expiry)) {
+                Swal.showValidationMessage('תוקף חייב להיות בפורמט MM/YY');
+                return false;
+              }
+          
+              // בדיקה שהתוקף לא עבר
+              const [expMonth, expYear] = expiry.split('/');
+              const now = new Date();
+              const expDate = new Date(`20${expYear}`, expMonth);
+              if (expDate < now) {
+                Swal.showValidationMessage('תוקף הכרטיס פג');
+                return false;
+              }
+          
+              if (!cvvRegex.test(cvv)) {
+                Swal.showValidationMessage('CVV חייב להיות בן 3 ספרות');
+                return false;
+              }
+          
+              return true;
+            },
+            confirmButtonText: 'אני מסכים ומאשר מחיקה'
+          });          
   
         if (!confirmed) return;
       }
